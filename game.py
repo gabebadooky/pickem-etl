@@ -1,7 +1,30 @@
 import requests
 
-game = '401754516'
+game = '401628504'
 
+def extract_datetime(data: dict) -> str:
+    try:
+        zulu_datetime = data['header']['competitions'][0]['date'].split('T')[1]
+    except Exception as e:
+        print(e)
+        zulu_datetime = 'TBD'
+    return zulu_datetime
+
+def extract_gamedate(data: dict) -> str:
+    try:
+        gamedate = data['header']['competitions'][0]['date'].split('T')[0]
+    except Exception as e:
+        print(e)
+        gamedate = ''
+    return gamedate
+
+def extract_broadcast(data: dict) -> str:
+    try:
+        broadcast = data['header']['competitions'][0]['broadcasts'][0]['media']['shortName']
+    except Exception as e:
+        print(e)
+        broadcast = ''
+    return broadcast
 
 def get_game_data(game_id: str) -> dict:
     """
@@ -13,10 +36,5 @@ def get_game_data(game_id: str) -> dict:
     return json_response
 
 
-game_json = get_game_data(game)
-
-zulu_datetime = game_json['header']['competitions'][0]['date'].split('T')[1]
-game_date = game_json['header']['competitions'][0]['date'].split('T')[0]
-broadcast = game_json['header']['competitions'][0]['broadcasts']
-
-print(broadcast)
+game_data = get_game_data(game)
+print(extract_broadcast(game_data))
