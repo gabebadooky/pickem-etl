@@ -1,3 +1,11 @@
+def extract_game_week(data: dict) -> int:
+    try:
+        week = data['week']['number']
+    except Exception as e:
+        print(e)
+        week = -1
+    return week
+
 def extract_datetime(data: dict) -> str:
     try:
         zulu_datetime = str(data['competitions'][0]['date'].split('T')[1])
@@ -54,6 +62,14 @@ def extract_broadcast(data: dict) -> str:
         print(e)
         broadcast = ''
     return broadcast
+
+def extract_game_finished(data: dict) -> bool:
+    try:
+        game_completed = str(data['competitions'][0]['status']['type']['completed'])
+    except Exception as e:
+        print(e)
+        game_completed = False
+    return game_completed
 
 def extract_over_under(data: dict) -> str:
     try:
