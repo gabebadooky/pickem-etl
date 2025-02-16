@@ -57,7 +57,7 @@ def extract_home_team(data: dict) -> str:
 
 def extract_broadcast(data: dict) -> str:
     try:
-        broadcast = str(data['competitions'][0]['broadcasts'][0]['media']['shortName'])
+        broadcast = str(data['competitions'][0]['broadcast'])
     except Exception as e:
         print(e)
         broadcast = ''
@@ -144,4 +144,3 @@ def extract_city(data: dict) -> str:
         print(e)
         city = ''
     return city
-
