@@ -121,3 +121,4 @@ def format_team_stats(team):
             'type': stat_type,
             'value': team[stat_type]
         })
+    return team_stats
