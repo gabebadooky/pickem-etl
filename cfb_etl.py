@@ -12,7 +12,7 @@ def get_week_games(week_num: int) -> list:
         game_id = f'{g.extract_away_team(event)}-{g.extract_home_team(event)}-{g.extract_gamedate(event)}'
 
         game = dict(
-            # games
+            # game
             game_id = game_id,
             league = 'CFB',
             week = week_num,
@@ -51,7 +51,7 @@ def get_week_games(week_num: int) -> list:
             away_win_percentage = '',
             home_win_percentage = '',
 
-            # locations
+            # location
             stadium = g.extract_stadium(event),
             city = g.extract_city(event),
             state = g.extract_state(event),

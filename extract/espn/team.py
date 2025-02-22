@@ -73,24 +73,3 @@ def extract_logo_url(data: dict) -> str:
         print(e)
         logo_url = ''
     return logo_url
-
-def get_team_data(team_id: str) -> dict:
-    espn_team_endpoint = f'http://site.api.espn.com/apis/site/v2/sports/football/college-football/teams/{team_id}'
-    data = requests.get(espn_team_endpoint).json()
-
-    team = dict(
-        team_id = team_id,
-        cbs_code = '',
-        espn_code = team_id,
-        fox_code = '',
-        vegas_code = '',
-        conference_code = extract_conference_code(data),
-        conference_name = extract_conference_name(data),
-        division_name = extract_division_name(data),
-        team_name = extract_team_name(data),
-        team_mascot = extract_team_mascot(data),
-        # Treat Notre Dame as Power 4...
-        g5_conference = False if team_id == '87' else is_g5_conference(extract_conference_name(data)),
-        team_logo_url = extract_logo_url(data)
-    )
-    return team
