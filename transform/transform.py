@@ -1,4 +1,4 @@
-def format_game(scoreboard):
+def format_game(scoreboard: dict) -> dict:
     game = dict(
         game_id = scoreboard['game_id'],
         league = scoreboard['league'],
@@ -16,7 +16,7 @@ def format_game(scoreboard):
     )
     return game
 
-def format_away_box_score(scoreboard):
+def format_away_box_score(scoreboard: dict) -> dict:
     away_box_score = dict(
         game_id = scoreboard['game_id'],
         team_id = scoreboard['team_id'],
@@ -29,7 +29,7 @@ def format_away_box_score(scoreboard):
     )
     return away_box_score
 
-def format_home_box_score(scoreboard):
+def format_home_box_score(scoreboard: dict) -> dict:
     home_box_score = dict(
         game_id = scoreboard['game_id'],
         team_id = scoreboard['team_id'],
@@ -42,8 +42,9 @@ def format_home_box_score(scoreboard):
     )
     return home_box_score
 
-def format_odds(scoreboard):
+def format_odds(scoreboard: dict) -> dict:
     odds = dict(
+        game_id = scoreboard['game_id'],
         game_code = scoreboard['game_code'],
         source = scoreboard['source'],
         away_moneyline = scoreboard['away_moneyline'],
@@ -56,7 +57,7 @@ def format_odds(scoreboard):
     )
     return odds
 
-def format_location(scoreboard):
+def format_location(scoreboard: dict) -> dict:
     location = dict(
         stadium = scoreboard['stadium'],
         city = scoreboard['city'],
@@ -66,7 +67,7 @@ def format_location(scoreboard):
     )
     return location
 
-def format_team(team):
+def format_team(team: dict) -> dict:
     team = dict(
         team_id = team['team_id'],
         cbs_code = team['cbs_code'],
@@ -83,7 +84,7 @@ def format_team(team):
     )
     return team
 
-def format_conference_record(team):
+def format_conference_record(team: dict) -> dict:
     conference_record = dict(
         team_id = team['team_id'],
         record_type = 'Conference',
@@ -93,7 +94,7 @@ def format_conference_record(team):
     )
     return conference_record
 
-def format_overall_record(team):
+def format_overall_record(team: dict) -> dict:
     overall_record = dict(
         team_id = team['team_id'],
         record_type = 'Overall',
@@ -103,7 +104,7 @@ def format_overall_record(team):
     )
     return overall_record
 
-def format_team_stats(team):
+def format_team_stats(team: dict) -> list:
     team_stats = []
     stat_types = ['pass_attempts', 'opp_pass_attempts',
                   'pass_completions', 'opp_pass_completions',
