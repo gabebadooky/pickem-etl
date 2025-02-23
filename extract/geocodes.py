@@ -1,5 +1,5 @@
 import requests
-from open_cage_api_key import key
+from credentials.open_cage_api_key import key
 
 def call_geocode_api(stadium: str, city: str, state=None) -> dict:
     open_cage_geocode_endpoint = f'https://api.opencagedata.com/geocode/v1/json?key={key}'
