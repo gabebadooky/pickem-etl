@@ -1,5 +1,6 @@
 # Credentials
-open_cage_api_key.py
+credentials/open_cage_api_key.py
+credentials/mysql_connection_string.py
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
