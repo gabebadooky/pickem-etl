@@ -1,5 +1,5 @@
-import game as g
-import team as t
+import extract.espn.game as g
+import extract.espn.team as t
 import extract.geocodes as l
 
 def get_scoreboard_data(event):
