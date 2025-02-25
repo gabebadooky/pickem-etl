@@ -1,5 +1,3 @@
-import requests
-
 def extract_team_name(data: dict) -> str:
     try:
         team_name = data['team']['location']
