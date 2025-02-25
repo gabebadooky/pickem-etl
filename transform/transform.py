@@ -1,3 +1,6 @@
+import zulu
+from datetime import datetime
+
 def format_game(scoreboard: dict) -> dict:
     game = dict(
         game_id = scoreboard['game_id'],
@@ -9,8 +12,8 @@ def format_game(scoreboard: dict) -> dict:
         vegas_code = scoreboard['vegas_code'],
         away_team_id = scoreboard['away_team_id'],
         home_team_id = scoreboard['home_team_id'],
-        date = scoreboard['date'],
-        time = scoreboard['time'],
+        date = None if scoreboard['date'] == 'TBD' else datetime.strptime(scoreboard['date'], '%Y-%m-%d'),
+        time = None if scoreboard['time'] == 'TBD' else zulu.parse(scoreboard['time'][:-1], '%H:%M'),
         tv_coverage = scoreboard['tv_coverage'],
         game_finished = scoreboard['game_finished']
     )
