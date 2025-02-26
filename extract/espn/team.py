@@ -1,3 +1,45 @@
+class Team:
+    def __init__(self, team):
+        self.team_id = team['team_id']
+        self.cbs_code = ''
+        self.espn_code = team['team_id']
+        self.fox_code = ''
+        self.vegas_code = ''
+        self.conference_code = extract_conference_code(team)
+        self.conference_name = extract_conference_name(team)
+        self.division_name = extract_division_name(team)
+        self.team_name = extract_team_name(team)
+        self.team_mascot = extract_team_mascot(team)
+        # Treat Notre Dame as Power 4...
+        self.g5_conference = False if team['team_id'] == '87' else is_g5_conference(extract_conference_name(team))
+        self.team_logo_url = extract_logo_url(team)
+        self.conference_wins = 0
+        self.conference_losses = 0
+        self.conference_ties = 0
+        self.overall_wins = 0
+        self.overall_losses = 0
+        self.overall_ties = 0
+        self.pass_attempts = 0
+        self.opp_pass_attempts = 0
+        self.pass_completions = 0
+        self.opp_pass_completions = 0
+        self.completion_percentage = 0
+        self.opp_completion_percentage = 0
+        self.pass_yards = 0
+        self.opp_pass_yards = 0
+        self.pass_touchdowns = 0
+        self.opp_pass_touchdowns = 0
+        self.offense_interceptions = 0
+        self.defense_interceptions = 0
+        self.rush_yards = 0
+        self.opp_rush_yards = 0
+        self.rush_attempts = 0
+        self.opp_rush_attempts = 0
+        self.yards_per_rush = 0
+        self.opp_yards_per_rush = 0
+        self.rush_touchdowns = 0
+        self.opp_rush_touchdowns = 0
+
 def extract_team_name(data: dict) -> str:
     try:
         team_name = data['team']['location']
