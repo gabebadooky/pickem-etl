@@ -1,105 +1,107 @@
 import zulu
 from datetime import datetime
 
-def format_game(scoreboard: dict) -> dict:
-    game = dict(
-        game_id = scoreboard['game_id'],
-        league = scoreboard['league'],
-        week = scoreboard['week'],
-        cbs_code = scoreboard['cbs_code'],
-        espn_code = scoreboard['espn_code'],
-        fox_code = scoreboard['fox_code'],
-        vegas_code = scoreboard['vegas_code'],
-        away_team_id = scoreboard['away_team_id'],
-        home_team_id = scoreboard['home_team_id'],
-        date = None if scoreboard['date'] == 'TBD' else datetime.strptime(scoreboard['date'], '%Y-%m-%d'),
-        time = None if scoreboard['time'] == 'TBD' else zulu.parse(scoreboard['time'][:-1], '%H:%M'),
-        tv_coverage = scoreboard['tv_coverage'],
-        game_finished = scoreboard['game_finished']
+def format_game(game: object) -> dict:
+    print(f'game.date = {game.home_team_id}')
+    print(f'game.date = {game.date}')
+    game_dict = dict(
+        game_id = game.game_id,
+        league = game.league,
+        week = game.week,
+        cbs_code = game.cbs_code,
+        espn_code = game.espn_code,
+        fox_code = game.fox_code,
+        vegas_code = game.vegas_code,
+        away_team_id = game.away_team_id,
+        home_team_id = game.home_team_id,
+        date = None if game.date == 'TBD' else datetime.strptime(game.date, '%Y-%m-%d'),
+        time = None if game.time == 'TBD' else zulu.parse(game.time, '%H:%M'),
+        tv_coverage = game.tv_coverage,
+        game_finished = game.game_finished
     )
-    return game
+    return game_dict
 
-def format_away_box_score(scoreboard: dict) -> dict:
+def format_away_box_score(game: object) -> dict:
     away_box_score = dict(
-        game_id = scoreboard['game_id'],
-        team_id = scoreboard['team_id'],
-        away_q1_score = scoreboard['away_q1_score'],
-        away_q2_score = scoreboard['away_q2_score'],
-        away_q3_score = scoreboard['away_q3_score'],
-        away_q4_score = scoreboard['away_q4_score'],
-        away_overtime_score = scoreboard['away_overtime_score'],
-        away_total_score = scoreboard['away_total_score']
+        game_id = game.game_id,
+        team_id = game.team_id,
+        away_q1_score = game.away_q1_score,
+        away_q2_score = game.away_q2_score,
+        away_q3_score = game.away_q3_score,
+        away_q4_score = game.away_q4_score,
+        away_overtime_score = game.away_overtime_score,
+        away_total_score = game.away_total_score
     )
     return away_box_score
 
-def format_home_box_score(scoreboard: dict) -> dict:
+def format_home_box_score(game: object) -> dict:
     home_box_score = dict(
-        game_id = scoreboard['game_id'],
-        team_id = scoreboard['team_id'],
-        home_q1_score = scoreboard['home_q1_score'],
-        home_q2_score = scoreboard['home_q2_score'],
-        home_q3_score = scoreboard['home_q3_score'],
-        home_q4_score = scoreboard['home_q4_score'],
-        home_overtime_score = scoreboard['home_overtime_score'],
-        home_total_score = scoreboard['home_total_score']
+        game_id = game.game_id,
+        team_id = game.team_id,
+        home_q1_score = game.home_q1_score,
+        home_q2_score = game.home_q2_score,
+        home_q3_score = game.home_q3_score,
+        home_q4_score = game.home_q4_score,
+        home_overtime_score = game.home_overtime_score,
+        home_total_score = game.home_total_score
     )
     return home_box_score
 
-def format_odds(scoreboard: dict) -> dict:
+def format_odds(game: object) -> dict:
     odds = dict(
-        game_id = scoreboard['game_id'],
-        game_code = scoreboard['game_code'],
-        source = scoreboard['source'],
-        away_moneyline = scoreboard['away_moneyline'],
-        home_moneyline = scoreboard['home_moneyline'],
-        away_spread = scoreboard['away_spread'],
-        home_spread = scoreboard['home_spread'],
-        over_under = scoreboard['over_under'],
-        away_win_percentage = scoreboard['away_win_percentage'],
-        home_win_percentage = scoreboard['home_win_percentage']
+        game_id = game.game_id,
+        game_code = game.game_code,
+        source = game.source,
+        away_moneyline = game.away_moneyline,
+        home_moneyline = game.home_moneyline,
+        away_spread = game.away_spread,
+        home_spread = game.home_spread,
+        over_under = game.over_under,
+        away_win_percentage = game.away_win_percentage,
+        home_win_percentage = game.home_win_percentage
     )
     return odds
 
-def format_location(scoreboard: dict) -> dict:
+def format_location(game: object) -> dict:
     location = dict(
-        stadium = scoreboard['stadium'],
-        city = scoreboard['city'],
-        state = scoreboard['state'],
-        latitude = scoreboard['latitude'],
-        longitude = scoreboard['longitude'],
+        stadium = game.stadium,
+        city = game.city,
+        state = game.state,
+        latitude = game.latitude,
+        longitude = game.longitude,
     )
     return location
 
-def format_team(team: dict) -> dict:
+def format_team(team: object) -> dict:
     team = dict(
-        team_id = team['team_id'],
-        cbs_code = team['cbs_code'],
-        espn_code = team['espn_code'],
-        fox_code = team['fox_code'],
-        vegas_code = team['vegas_code'],
-        conference_code = team['conference_code'],
-        conference_name = team['conference_name'],
-        division_name = team['division_name'],
-        team_name = team['team_name'],
-        team_mascot = team['team_mascot'],
-        g5_conference = team['g5_conference'],
-        team_logo_url = team['team_logo_url']
+        team_id = team.team_id,
+        cbs_code = team.cbs_code,
+        espn_code = team.espn_code,
+        fox_code = team.fox_code,
+        vegas_code = team.vegas_code,
+        conference_code = team.conference_code,
+        conference_name = team.conference_name,
+        division_name = team.division_name,
+        team_name = team.team_name,
+        team_mascot = team.team_mascot,
+        g5_conference = team.g5_conference,
+        team_logo_url = team.team_logo_url
     )
     return team
 
-def format_conference_record(team: dict) -> dict:
+def format_conference_record(team: object) -> dict:
     conference_record = dict(
-        team_id = team['team_id'],
+        team_id = team.team_id,
         record_type = 'Conference',
-        wins = team['conference_wins'],
-        losses = team['conference_losses'],
-        ties = team['conference_ties']
+        wins = team.conference_wins,
+        losses = team.conference_losses,
+        ties = team.conference_ties
     )
     return conference_record
 
-def format_overall_record(team: dict) -> dict:
+def format_overall_record(team: object) -> dict:
     overall_record = dict(
-        team_id = team['team_id'],
+        team_id = team.team_id,
         record_type = 'Overall',
         wins = 0,
         losses = 0,
@@ -107,7 +109,7 @@ def format_overall_record(team: dict) -> dict:
     )
     return overall_record
 
-def format_team_stats(team: dict) -> list:
+def format_team_stats(team: object) -> list:
     team_stats = []
     stat_types = ['pass_attempts', 'opp_pass_attempts',
                   'pass_completions', 'opp_pass_completions',
@@ -121,7 +123,7 @@ def format_team_stats(team: dict) -> list:
                   'rush_touchdowns', 'opp_rush_touchdowns']
     for stat_type in stat_types:
         team_stats.append({
-            'team_id': team['team_id'],
+            'team_id': team.team_id,
             'type': stat_type,
             'value': team[stat_type]
         })
