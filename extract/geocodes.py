@@ -18,8 +18,6 @@ def call_geocode_api(stadium: str, city: str, state=None) -> dict:
 
 def get_lat_long_tuple(stadium: str, city: str, state=None) -> tuple:
     data = call_geocode_api(stadium, city, state)
-    print(f'{stadium}, {city}, {state}\nGeocode: {data}')
-
     try:
         latitude = data['results'][0]['geometry']['lat']
         longitude = data['results'][0]['geometry']['lng']
