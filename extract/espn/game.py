@@ -1,3 +1,45 @@
+import extract.geocodes as l
+
+class Game:
+    def __init__(self, event, league):
+        self.game_id = event['id']
+        self.league = league
+        self.week = event['week']['number']
+        self.cbs_code = ''
+        self.espn_code = event['id']
+        self.fox_code = ''
+        self.vegas_code = ''
+        self.away_team_id = extract_away_team(event)
+        self.home_team_id = extract_home_team(event)
+        self.date = extract_gamedate(event)
+        self.time = extract_datetime(event)
+        self.tv_coverage = extract_broadcast(event)
+        self.game_finished = extract_game_finished(event)
+        self.away_q1_score = 0
+        self.away_q2_score = 0
+        self.away_q3_score = 0
+        self.away_q4_score = 0
+        self.away_overtime_score = 0
+        self.away_total_score = 0
+        self.home_q1_score = 0
+        self.home_q2_score = 0
+        self.home_q3_score = 0
+        self.home_q4_score = 0
+        self.home_overtime_score = 0
+        self.home_total_score = 0
+        self.away_moneyline = extract_away_moneyline(event)
+        self.home_moneyline = extract_home_moneyline(event)
+        self.away_spread = extract_away_spread(event)
+        self.home_spread = extract_home_spread(event)
+        self.over_under = extract_over_under(event)
+        self.away_win_percentage = ''
+        self.home_win_percentage = ''
+        self.stadium = extract_stadium(event)
+        self.city = extract_city(event)
+        self.state = extract_state(event)
+        self.latitude = l.get_lat_long_tuple(extract_stadium(event), extract_city(event), extract_state(event))[0]
+        self.longitude = l.get_lat_long_tuple(extract_stadium(event), extract_city(event), extract_state(event))[0]
+
 def extract_game_week(data: dict) -> int:
     try:
         week = data['week']['number']
@@ -8,7 +50,7 @@ def extract_game_week(data: dict) -> int:
 
 def extract_datetime(data: dict) -> str:
     try:
-        zulu_datetime = str(data['competitions'][0]['date'].split('T')[1])
+        zulu_datetime = str(data['competitions'][0]['date'].split('T')[1])[:-1]
     except:
         print(f'Error occurred extracting zulu gametime for game {data["id"]}')
         zulu_datetime = 'TBD'
@@ -17,6 +59,7 @@ def extract_datetime(data: dict) -> str:
 def extract_gamedate(data: dict) -> str:
     try:
         gamedate = str(data['competitions'][0]['date'].split('T')[0])
+        print(f'gamedate: {gamedate}')
     except:
         print(f'Error occurred extracting gamedate for game {data["id"]}')
         gamedate = 'TBD'
