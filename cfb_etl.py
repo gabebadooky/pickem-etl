@@ -37,7 +37,6 @@ for week in range(weeks):
     week_json_response = get_all_games_in_week(week)
     for game_json in week_json_response:
         game = eg.Game(game_json, 'CFB')
-        print(game.date)
         #game_dict = e.get_scoreboard_data(game)
         distinct_away_teams.add(game.away_team_id)
         load_game_data(game)

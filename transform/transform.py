@@ -1,9 +1,4 @@
-import zulu
-from datetime import datetime
-
 def format_game(game: object) -> dict:
-    print(f'game.date = {game.home_team_id}')
-    print(f'game.date = {game.date}')
     game_dict = dict(
         game_id = game.game_id,
         league = game.league,
@@ -14,9 +9,10 @@ def format_game(game: object) -> dict:
         vegas_code = game.vegas_code,
         away_team_id = game.away_team_id,
         home_team_id = game.home_team_id,
-        date = None if game.date == 'TBD' else datetime.strptime(game.date, '%Y-%m-%d'),
-        time = None if game.time == 'TBD' else zulu.parse(game.time, '%H:%M'),
+        date = game.date,
+        time = game.time,
         tv_coverage = game.tv_coverage,
+        stadium = game.stadium,
         game_finished = game.game_finished
     )
     return game_dict

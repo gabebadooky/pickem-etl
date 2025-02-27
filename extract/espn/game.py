@@ -53,7 +53,7 @@ def extract_datetime(data: dict) -> str:
         zulu_datetime = str(data['competitions'][0]['date'].split('T')[1])[:-1]
     except:
         print(f'Error occurred extracting zulu gametime for game {data["id"]}')
-        zulu_datetime = 'TBD'
+        zulu_datetime = ''
     return zulu_datetime
 
 def extract_gamedate(data: dict) -> str:
@@ -62,7 +62,7 @@ def extract_gamedate(data: dict) -> str:
         print(f'gamedate: {gamedate}')
     except:
         print(f'Error occurred extracting gamedate for game {data["id"]}')
-        gamedate = 'TBD'
+        gamedate = ''
     return gamedate
 
 def get_teams(data: dict) -> dict:
@@ -106,12 +106,12 @@ def extract_broadcast(data: dict) -> str:
         broadcast = ''
     return broadcast
 
-def extract_game_finished(data: dict) -> bool:
+def extract_game_finished(data: dict) -> int:
     try:
-        game_completed = str(data['competitions'][0]['status']['type']['completed'])
+        game_completed = 0 if str(data['competitions'][0]['status']['type']['completed']) == 'true' else 1
     except:
         print(f'Error occurred extracting game_finished for game {data["id"]}')
-        game_completed = False
+        game_completed = 1
     return game_completed
 
 def extract_over_under(data: dict) -> str:
