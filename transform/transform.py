@@ -20,7 +20,7 @@ def format_game(game: object) -> dict:
 def format_away_box_score(game: object) -> dict:
     away_box_score = dict(
         game_id = game.game_id,
-        team_id = game.team_id,
+        team_id = game.away_team_id,
         away_q1_score = game.away_q1_score,
         away_q2_score = game.away_q2_score,
         away_q3_score = game.away_q3_score,
@@ -33,7 +33,7 @@ def format_away_box_score(game: object) -> dict:
 def format_home_box_score(game: object) -> dict:
     home_box_score = dict(
         game_id = game.game_id,
-        team_id = game.team_id,
+        team_id = game.home_team_id,
         home_q1_score = game.home_q1_score,
         home_q2_score = game.home_q2_score,
         home_q3_score = game.home_q3_score,
@@ -44,10 +44,23 @@ def format_home_box_score(game: object) -> dict:
     return home_box_score
 
 def format_odds(game: object) -> dict:
+    if len(game.espn_code) > 1:
+        gamecode = game.espn_code
+        source = 'ESPN'
+    elif len(game.cbs_code) > 1:
+        gamecode = game.cbs_code
+        source = 'CBS'
+    elif len(game.fox_code) > 1:
+        gamecode = game.vegas_code
+        source = 'FOX'
+    else:
+        gamecode = '0'
+        source = 'ERR'
+
     odds = dict(
         game_id = game.game_id,
-        game_code = game.game_code,
-        source = game.source,
+        game_code = gamecode,
+        source = source,
         away_moneyline = game.away_moneyline,
         home_moneyline = game.home_moneyline,
         away_spread = game.away_spread,

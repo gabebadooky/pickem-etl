@@ -1,8 +1,8 @@
 class Team:
     def __init__(self, team):
-        self.team_id = team['team_id']
+        self.team_id = team['team']['id']
         self.cbs_code = ''
-        self.espn_code = team['team_id']
+        self.espn_code = team['team']['id']
         self.fox_code = ''
         self.vegas_code = ''
         self.conference_code = extract_conference_code(team)
@@ -11,7 +11,7 @@ class Team:
         self.team_name = extract_team_name(team)
         self.team_mascot = extract_team_mascot(team)
         # Treat Notre Dame as Power 4...
-        self.g5_conference = False if team['team_id'] == '87' else is_g5_conference(extract_conference_name(team))
+        self.g5_conference = False if team['team']['id'] == '87' else is_power_conference(extract_conference_name(team))
         self.team_logo_url = extract_logo_url(team)
         self.conference_wins = 0
         self.conference_losses = 0
@@ -90,21 +90,11 @@ def extract_division_name(data: dict) -> str:
         division_name = ''
     return division_name
 
-def is_g5_conference(conference_name: str) -> bool:
-    g5_conference = {
-        'ACC': False,
-        'American': True,
-        'Big 12': False,
-        'Big Ten': False,
-        'Conference USA': True,
-        'FBS Independents': True,
-        'Mid-American': True,
-        'Mountain West': True,
-        'Pac-12': True,
-        'SEC': False,
-        'Sun Belt': True
-    }
-    return g5_conference[conference_name]
+def is_power_conference(conference_name: str) -> bool:
+    if conference_name in ['ACC', 'Big 12', 'Big Ten', 'SEC']:
+        return True
+    else :
+        return False
 
 def extract_logo_url(data: dict) -> str:
     try:

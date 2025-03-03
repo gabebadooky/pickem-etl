@@ -59,7 +59,6 @@ def extract_datetime(data: dict) -> str:
 def extract_gamedate(data: dict) -> str:
     try:
         gamedate = str(data['competitions'][0]['date'].split('T')[0])
-        print(f'gamedate: {gamedate}')
     except:
         print(f'Error occurred extracting gamedate for game {data["id"]}')
         gamedate = ''
@@ -166,7 +165,7 @@ def extract_home_moneyline(data: dict) -> str:
 
 def extract_stadium(data: dict) -> str:
     try:
-        stadium = data['competitions'][0]['venue']['fullName']
+        stadium = data['competitions'][0]['venue']['fullName'].replace("'", "''")
     except:
         print(f'Error occurred extracting stadium for game {data["id"]}')
         stadium = ''
