@@ -134,6 +134,6 @@ def format_team_stats(team: object) -> list:
         team_stats.append({
             'team_id': team.team_id,
             'type': stat_type,
-            'value': team[stat_type]
+            'value': getattr(team, stat_type)
         })
     return team_stats
