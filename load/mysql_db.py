@@ -4,8 +4,12 @@ from credentials import mysql_connection_string as database_connection
 def instantiate_procedure_params(data_dict):
     procedure_params = f""
     for key in data_dict:
-        dict_key = data_dict[key].replace("'", "''")
-        procedure_params += f"{dict_key}, " if isinstance(dict_key, int) else f"'{dict_key}', "
+        dict_key = data_dict[key]
+        if isinstance(dict_key, int) or isinstance(dict_key, float):
+            procedure_params += f"{dict_key}, "
+        else:
+            dict_key = dict_key.replace("'", "''")
+            procedure_params += f"'{dict_key}', "
     procedure_params = procedure_params.rstrip(', ')
     return procedure_params
 
