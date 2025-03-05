@@ -165,7 +165,7 @@ def extract_home_moneyline(data: dict) -> str:
 
 def extract_stadium(data: dict) -> str:
     try:
-        stadium = data['competitions'][0]['venue']['fullName'].replace("'", "''")
+        stadium = data['competitions'][0]['venue']['fullName']
     except:
         print(f'Error occurred extracting stadium for game {data["id"]}')
         stadium = ''
