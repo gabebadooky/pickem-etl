@@ -13,6 +13,7 @@ def format_game(game: object) -> dict:
         time = game.time,
         tv_coverage = game.tv_coverage,
         stadium = game.stadium,
+        city = game.city,
         game_finished = game.game_finished
     )
     return game_dict
@@ -101,7 +102,7 @@ def format_team(team: object) -> dict:
 def format_conference_record(team: object) -> dict:
     conference_record = dict(
         team_id = team.team_id,
-        record_type = 'Conference',
+        record_type = 'CONFERENCE',
         wins = team.conference_wins,
         losses = team.conference_losses,
         ties = team.conference_ties
@@ -111,7 +112,7 @@ def format_conference_record(team: object) -> dict:
 def format_overall_record(team: object) -> dict:
     overall_record = dict(
         team_id = team.team_id,
-        record_type = 'Overall',
+        record_type = 'OVERALL',
         wins = 0,
         losses = 0,
         ties = 0
