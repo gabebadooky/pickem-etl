@@ -1,4 +1,4 @@
-import extract.geocodes as l
+from etl.extract import geocodes as l
 
 class Game:
     def __init__(self, event, league):
