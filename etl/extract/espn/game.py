@@ -2,7 +2,7 @@ from etl.extract import geocodes as l
 
 class Game:
     def __init__(self, event, league):
-        self.game_id = event['id']
+        self.game_id = extract_game_id(event)
         self.league = league
         self.week = event['week']['number']
         self.cbs_code = ''
@@ -39,6 +39,10 @@ class Game:
         self.state = extract_state(event)
         self.latitude = l.get_lat_long_tuple(extract_stadium(event), extract_city(event), extract_state(event))[0]
         self.longitude = l.get_lat_long_tuple(extract_stadium(event), extract_city(event), extract_state(event))[0]
+
+
+def extract_game_id(data: dict) -> str:
+    return data['name'].replace(' ', '-').replace('\'', '')
 
 def extract_game_week(data: dict) -> int:
     try:
