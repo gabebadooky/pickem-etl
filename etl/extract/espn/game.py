@@ -112,46 +112,50 @@ def extract_game_finished(data: dict) -> int:
         return 1
 
 def extract_over_under(data: dict) -> str:
-    if hasattr(data['competitions'][0]['odds'][0], 'overUnder'):
+    if hasattr(data['competitions'][0], 'odds') and hasattr(data['competitions'][0]['odds'][0], 'overUnder'):
         return str(data['competitions'][0]['odds'][0]['overUnder'])
     else:
         return '0'
 
 def extract_spread(data: dict) -> int:
-    if hasattr(data['odds'][0], 'spread'):
-        return int(data['odds'][0]['spread'])
+    if hasattr(data['competitions'][0], 'odds') and hasattr(data['competitions'][0]['odds'][0], 'spread'):
+        return int(data['competitions'][0]['odds'][0], 'spread')
     else:
         return 0
 
 def extract_away_spread(data: dict) -> str:
     try:
         spread = extract_spread(data)
-        away_spread = f'+{str(spread)}' if spread > 0 else str(spread)
+        return f'+{str(spread)}' if spread > 0 else str(spread)
     except:
-        print(f'Error occurred extracting away_spread for game {extract_game_id(data)}')
-        away_spread = '0'
-    return away_spread
+        return '0'
 
 def extract_home_spread(data: dict) -> str:
     try:
         spread = extract_spread(data)
-        home_spread = f'+{str(spread)}' if spread > 0 else str(spread)
+        return f'+{str(spread)}' if spread < 0 else str(spread)
     except:
-        print(f'Error occurred extracting home_spread for game {extract_game_id(data)}')
-        home_spread = '0'
-    return home_spread
+        return '0'
+
+def extract_moneyline(data: dict) -> str:
+    if hasattr(data['competitions'][0], 'odds') and hasattr(data['competitions'][0]['odds'][0], 'details'):
+        return data['competitions'][0]['odds'][0]['details']
+    else:
+        return ''
 
 def extract_away_moneyline(data: dict) -> str:
-    if hasattr(data, 'odds'):
-        return data['odds']
-    else:
-        return ''
+    try:
+        spread = extract_spread(data)
+        return f'+{str(spread)}' if spread > 0 else str(spread)
+    except:
+        return '0'
 
 def extract_home_moneyline(data: dict) -> str:
-    if hasattr(data, 'odds'):
-        return data['odds']
-    else:
-        return ''
+    try:
+        spread = extract_spread(data)
+        return f'+{str(spread)}' if spread < 0 else str(spread)
+    except:
+        return '0'
 
 def extract_stadium(data: dict) -> str:
     if hasattr(data['competitions'][0]['venue'], 'fullName'):
