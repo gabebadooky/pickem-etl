@@ -13,6 +13,8 @@ class Team:
         # Treat Notre Dame as Power 4...
         self.g5_conference = False if team['team']['id'] == '87' else is_power_conference(extract_conference_name(team))
         self.team_logo_url = extract_logo_url(team)
+        self.primary_color = team['team']['color']
+        self.alternate_color = team['team']['alternateColor']
         self.conference_wins = 0
         self.conference_losses = 0
         self.conference_ties = 0
@@ -41,31 +43,25 @@ class Team:
         self.opp_rush_touchdowns = 0
 
 def extract_team_name(data: dict) -> str:
-    try:
-        team_name = data['team']['location']
-    except Exception as e:
-        print(e)
-        team_name = ''
-    return team_name
+    if hasattr(data['team'], 'location'):
+        return data['team']['location']
+    else:
+        return ''
 
 def extract_team_mascot(data: dict) -> str:
-    try:
-        team_mascot = data['team']['name']
-    except Exception as e:
-        print(e)
-        team_mascot = ''
-    return team_mascot
+    if hasattr(data['team'], 'name'):
+        return data['team']['name']
+    else:
+        return ''
 
 def extract_conference_code(data: dict) -> str:
-    try:
-        conference_code = data['team']['groups']['id']
-    except Exception as e:
-        print(e)
-        conference_code = ''
-    return conference_code
+    if hasattr(data['team']['groups'], 'id'):
+        return data['team']['groups']['id']
+    else:
+        return ''
 
 def extract_conference_name(data: dict) -> str:
-    try:
+    if hasattr(data['team'], 'standingSummary'):
         conference_name = data['team']['standingSummary'].split(' in ')[1]
         if '-' in conference_name:
             conference_name = conference_name.split(' - ')[0]
@@ -73,33 +69,33 @@ def extract_conference_name(data: dict) -> str:
             conference_name = 'AFC'
         if 'NFC' in conference_name:
             conference_name = 'NFC'
-    except Exception as e:
-        print(e)
-        conference_name = ''
-    return conference_name
+    else:
+        return ''
 
 def extract_division_name(data: dict) -> str:
-    try:
+    if hasattr(data['team'], 'standingSummary'):
         division_name = data['team']['standingSummary'].split(' in ')[1]
         if '-' in division_name:
             division_name = division_name.split(' - ')[1]
         if 'AFC' not in division_name or 'NFC' not in division_name:
             division_name = ''
-    except Exception as e:
-        print(e)
-        division_name = ''
-    return division_name
+    else:
+        return ''
 
 def is_power_conference(conference_name: str) -> bool:
-    if conference_name in ['ACC', 'Big 12', 'Big Ten', 'SEC']:
-        return True
-    else :
-        return False
+    return True if conference_name in ['ACC', 'Big 12', 'Big Ten', 'SEC'] else False
 
 def extract_logo_url(data: dict) -> str:
-    try:
-        logo_url = data['team']['logos'][0]['href']
-    except Exception as e:
-        print(e)
-        logo_url = ''
-    return logo_url
+    if hasattr(data['team']['logos'][0], 'href'):
+        return data['team']['logos'][0]['href']
+    else:
+        return ''
+
+def extract_alternate_color(data: dict) -> str:
+    if hasattr(data['team'], 'alternateColor'):
+        alternate_color = data['team']['alternateColor']
+    elif data['team']['alternateColor'] == 'ffffff':
+        alternate_color = '000000'
+    else:
+        alternate_color = 'ffffff'
+    return alternate_color
