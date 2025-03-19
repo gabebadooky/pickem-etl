@@ -44,7 +44,7 @@ def extract_and_load_games(weeks):
 def extract_and_load_teams(distinct_away_teams):
     for distict_team in distinct_away_teams:
         print(f"\n\nProcessing Team {distict_team}")
-        team_json = get_team(distict_team)
+        team_json = get_team(f'{cfb_espn_team_endpoint}{distict_team}')
         print(team_json)
         team = et.Team(team_json)
         load_team_data(team)

@@ -3,6 +3,7 @@ def format_game(game: object) -> dict:
         game_id = game.game_id,
         league = game.league,
         week = game.week,
+        year = game.year,
         cbs_code = game.cbs_code,
         espn_code = game.espn_code,
         fox_code = game.fox_code,
@@ -95,7 +96,9 @@ def format_team(team: object) -> dict:
         team_name = team.team_name,
         team_mascot = team.team_mascot,
         g5_conference = team.g5_conference,
-        team_logo_url = team.team_logo_url
+        team_logo_url = team.team_logo_url,
+        primary_color = team.primary_color,
+        alternate_color = team.alternate_color
     )
     return team
 
