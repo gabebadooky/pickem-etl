@@ -5,6 +5,7 @@ class Game:
         self.game_id = extract_game_id(event)
         self.league = league
         self.week = event['week']['number']
+        self.year = event['season']['year']
         self.cbs_code = ''
         self.espn_code = event['id']
         self.fox_code = ''
@@ -45,50 +46,47 @@ def extract_game_id(data: dict) -> str:
     return data['name'].replace(' ', '-').replace('\'', '')
 
 def extract_game_week(data: dict) -> int:
-    try:
-        week = data['week']['number']
-    except:
-        print(f'Error occurred extracting week for game {data["id"]}')
-        week = -1
-    return week
+    if hasattr(data['week'], 'number'):
+        return data['week']['number']
+    else:
+        return -1
 
 def extract_datetime(data: dict) -> str:
-    try:
-        zulu_datetime = str(data['competitions'][0]['date'].split('T')[1])[:-1]
-    except:
-        print(f'Error occurred extracting zulu gametime for game {data["id"]}')
-        zulu_datetime = ''
-    return zulu_datetime
+    if hasattr(data['competitions'][0], 'date'):
+        return str(data['competitions'][0]['date'].split('T')[1][:-1])
+    else:
+        return ''
 
 def extract_gamedate(data: dict) -> str:
-    try:
-        gamedate = str(data['competitions'][0]['date'].split('T')[0])
-    except:
-        print(f'Error occurred extracting gamedate for game {data["id"]}')
-        gamedate = ''
-    return gamedate
+    if hasattr(data['competitions'][0], 'date'):
+        return str(data['competitions'][0]['date'].split('T')[0])
+    else:
+        return ''
 
 def get_teams(data: dict) -> dict:
-    try:
+    if (
+        hasattr(data['competitions'][0]['competitors'][0], 'homeAway') and 
+        hasattr(data['competitions'][0]['competitors'][1], 'homeAway') and 
+        hasattr(data['competitions'][0]['competitors'][0], 'id') and 
+        hasattr(data['competitions'][0]['competitors'][1], 'id')
+        ):
         team1_home_away = str(data['competitions'][0]['competitors'][0]['homeAway'])
         team2_home_away = str(data['competitions'][0]['competitors'][1]['homeAway'])
         team1_id = str(data['competitions'][0]['competitors'][0]['id'])
         team2_id = str(data['competitions'][0]['competitors'][1]['id'])
-        teams = {
+        return {
             team1_home_away: team1_id,
             team2_home_away: team2_id
         }
-    except:
-        print(f'Error occurred extracting teams for game {data["id"]}')
-        teams = {'away':'0', 'home':'0'}
-    return teams
+    else:
+        return {'away':'0', 'home':'0'}
 
 def extract_away_team(data: dict) -> str:
     try:
         teams = get_teams(data)
         away_team_id = teams['away']
     except:
-        print(f'Error occurred extracting away_team for game {data["id"]}')
+        print(f'Error occurred extracting away_team for game {extract_game_id(data)}')
         away_team_id = '0'
     return away_team_id
 
@@ -97,48 +95,40 @@ def extract_home_team(data: dict) -> str:
         teams = get_teams(data)
         home_team_id = teams['home']
     except:
-        print(f'Error occurred extracting home_team for game {data["id"]}')
+        print(f'Error occurred extracting home_team for game {extract_game_id(data)}')
         home_team_id = '0'
     return home_team_id
 
 def extract_broadcast(data: dict) -> str:
-    try:
-        broadcast = str(data['competitions'][0]['broadcast'])
-    except:
-        print(f'Error occurred extracting broadcast for game {data["id"]}')
-        broadcast = ''
-    return broadcast
+    if hasattr(data['competitions'][0], 'broadcast'):
+        return str(data['competitions'][0]['broadcast'])
+    else:
+        return ''
 
 def extract_game_finished(data: dict) -> int:
-    try:
-        game_completed = 0 if str(data['competitions'][0]['status']['type']['completed']) == 'true' else 1
-    except:
-        print(f'Error occurred extracting game_finished for game {data["id"]}')
-        game_completed = 1
-    return game_completed
+    if hasattr(data['competitions'][0]['status']['type'], 'completed'):
+        return 0 if str(data['competitions'][0]['status']['type']['completed']) == 'true' else 1
+    else:
+        return 1
 
 def extract_over_under(data: dict) -> str:
-    try:
-        over_under = str(data['competitions'][0]['odds'][0]['overUnder'])
-    except:
-        print(f'Error occurred extracting over_under for game {data["id"]}')
-        over_under = '0'
-    return over_under
+    if hasattr(data['competitions'][0]['odds'][0], 'overUnder'):
+        return str(data['competitions'][0]['odds'][0]['overUnder'])
+    else:
+        return '0'
 
 def extract_spread(data: dict) -> int:
-    try:
-        spread = int(data['odds'][0]['spread'])
-    except:
-        print(f'Error occurred extracting spread for game {data["id"]}')
-        spread = 0
-    return spread
+    if hasattr(data['odds'][0], 'spread'):
+        return int(data['odds'][0]['spread'])
+    else:
+        return 0
 
 def extract_away_spread(data: dict) -> str:
     try:
         spread = extract_spread(data)
         away_spread = f'+{str(spread)}' if spread > 0 else str(spread)
     except:
-        print(f'Error occurred extracting away_spread for game {data["id"]}')
+        print(f'Error occurred extracting away_spread for game {extract_game_id(data)}')
         away_spread = '0'
     return away_spread
 
@@ -147,46 +137,36 @@ def extract_home_spread(data: dict) -> str:
         spread = extract_spread(data)
         home_spread = f'+{str(spread)}' if spread > 0 else str(spread)
     except:
-        print(f'Error occurred extracting home_spread for game {data["id"]}')
+        print(f'Error occurred extracting home_spread for game {extract_game_id(data)}')
         home_spread = '0'
     return home_spread
 
 def extract_away_moneyline(data: dict) -> str:
-    try:
-        away_moneyline = data['odds']
-    except:
-        print(f'Error occurred extracting away moneyline for game {data["id"]}')
-        away_moneyline = ''
-    return away_moneyline
+    if hasattr(data, 'odds'):
+        return data['odds']
+    else:
+        return ''
 
 def extract_home_moneyline(data: dict) -> str:
-    try:
-        home_moneyline = data['odds']
-    except:
-        print(f'Error occurred extracting home moneyline for game {data["id"]}')
-        home_moneyline = ''
-    return home_moneyline
+    if hasattr(data, 'odds'):
+        return data['odds']
+    else:
+        return ''
 
 def extract_stadium(data: dict) -> str:
-    try:
-        stadium = data['competitions'][0]['venue']['fullName']
-    except:
-        print(f'Error occurred extracting stadium for game {data["id"]}')
-        stadium = ''
-    return stadium
+    if hasattr(data['competitions'][0]['venue'], 'fullName'):
+        return data['competitions'][0]['venue']['fullName']
+    else:
+        return ''
 
 def extract_state(data: dict) -> str:
-    try:
-        state = data['competitions'][0]['venue']['address']['state']
-    except:
-        print(f'Error occurred extracting state for game {data["id"]}')
-        state = ''
-    return state
+    if hasattr(data['competitions'][0]['venue']['address'], 'state'):
+        return data['competitions'][0]['venue']['address']['state']
+    else:
+        return ''
 
 def extract_city(data: dict) -> str:
-    try:
-        city = data['competitions'][0]['venue']['address']['city']
-    except:
-        print(f'Error occurred extracting city for game {data["id"]}')
-        city = ''
-    return city
+    if hasattr(data['competitions'][0]['venue']['address'], 'city'):
+        return data['competitions'][0]['venue']['address']['city']
+    else:
+        return ''
