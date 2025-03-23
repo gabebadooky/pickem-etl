@@ -14,7 +14,7 @@ class Team:
         self.g5_conference = False if team['team']['id'] == '87' else is_power_conference(extract_conference_name(team))
         self.team_logo_url = extract_logo_url(team)
         self.primary_color = team['team']['color']
-        self.alternate_color = team['team']['alternateColor']
+        self.alternate_color = extract_alternate_color(team)
         self.conference_wins = 0
         self.conference_losses = 0
         self.conference_ties = 0
@@ -55,9 +55,9 @@ def extract_team_mascot(data: dict) -> str:
         return ''
 
 def extract_conference_code(data: dict) -> str:
-    if hasattr(data['team']['groups'], 'id'):
+    try:
         return data['team']['groups']['id']
-    else:
+    except:
         return ''
 
 def extract_conference_name(data: dict) -> str:
@@ -86,15 +86,15 @@ def is_power_conference(conference_name: str) -> bool:
     return True if conference_name in ['ACC', 'Big 12', 'Big Ten', 'SEC'] else False
 
 def extract_logo_url(data: dict) -> str:
-    if hasattr(data['team']['logos'][0], 'href'):
+    try:
         return data['team']['logos'][0]['href']
-    else:
+    except:
         return ''
 
 def extract_alternate_color(data: dict) -> str:
     if hasattr(data['team'], 'alternateColor'):
         alternate_color = data['team']['alternateColor']
-    elif data['team']['alternateColor'] == 'ffffff':
+    elif data['team']['color'] == 'ffffff':
         alternate_color = '000000'
     else:
         alternate_color = 'ffffff'

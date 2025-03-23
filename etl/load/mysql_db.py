@@ -7,6 +7,8 @@ def instantiate_procedure_params(data_dict):
         dict_key = data_dict[key]
         if isinstance(dict_key, int) or isinstance(dict_key, float):
             procedure_params += f"{dict_key}, "
+        elif dict_key is None:
+            procedure_params += 'NULL, '
         else:
             dict_key = dict_key.replace("'", "''")
             procedure_params += f"'{dict_key}', "

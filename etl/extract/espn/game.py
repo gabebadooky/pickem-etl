@@ -39,7 +39,7 @@ class Game:
         self.city = extract_city(event)
         self.state = extract_state(event)
         self.latitude = l.get_lat_long_tuple(extract_stadium(event), extract_city(event), extract_state(event))[0]
-        self.longitude = l.get_lat_long_tuple(extract_stadium(event), extract_city(event), extract_state(event))[0]
+        self.longitude = l.get_lat_long_tuple(extract_stadium(event), extract_city(event), extract_state(event))[1]
 
 
 def extract_game_id(data: dict) -> str:
@@ -52,24 +52,19 @@ def extract_game_week(data: dict) -> int:
         return -1
 
 def extract_datetime(data: dict) -> str:
-    if hasattr(data['competitions'][0], 'date'):
+    try:
         return str(data['competitions'][0]['date'].split('T')[1][:-1])
-    else:
-        return ''
+    except:
+        return None
 
 def extract_gamedate(data: dict) -> str:
-    if hasattr(data['competitions'][0], 'date'):
+    try:
         return str(data['competitions'][0]['date'].split('T')[0])
-    else:
-        return ''
+    except:
+        return None
 
 def get_teams(data: dict) -> dict:
-    if (
-        hasattr(data['competitions'][0]['competitors'][0], 'homeAway') and 
-        hasattr(data['competitions'][0]['competitors'][1], 'homeAway') and 
-        hasattr(data['competitions'][0]['competitors'][0], 'id') and 
-        hasattr(data['competitions'][0]['competitors'][1], 'id')
-        ):
+    try:
         team1_home_away = str(data['competitions'][0]['competitors'][0]['homeAway'])
         team2_home_away = str(data['competitions'][0]['competitors'][1]['homeAway'])
         team1_id = str(data['competitions'][0]['competitors'][0]['id'])
@@ -78,8 +73,8 @@ def get_teams(data: dict) -> dict:
             team1_home_away: team1_id,
             team2_home_away: team2_id
         }
-    else:
-        return {'away':'0', 'home':'0'}
+    except:
+        return {'away': '0', 'home': '0'}
 
 def extract_away_team(data: dict) -> str:
     try:
@@ -100,77 +95,81 @@ def extract_home_team(data: dict) -> str:
     return home_team_id
 
 def extract_broadcast(data: dict) -> str:
-    if hasattr(data['competitions'][0], 'broadcast'):
+    try:
         return str(data['competitions'][0]['broadcast'])
-    else:
-        return ''
+    except:
+        return None
 
 def extract_game_finished(data: dict) -> int:
-    if hasattr(data['competitions'][0]['status']['type'], 'completed'):
-        return 0 if str(data['competitions'][0]['status']['type']['completed']) == 'true' else 1
-    else:
+    try:
+        if str(data['competitions'][0]['status']['type']['completed']) == 'true':
+            return 0
+        else:
+            return 1
+    except:
         return 1
 
 def extract_over_under(data: dict) -> str:
-    if hasattr(data['competitions'][0], 'odds') and hasattr(data['competitions'][0]['odds'][0], 'overUnder'):
+    try:
         return str(data['competitions'][0]['odds'][0]['overUnder'])
-    else:
-        return '0'
+    except:
+        return None
 
 def extract_spread(data: dict) -> int:
-    if hasattr(data['competitions'][0], 'odds') and hasattr(data['competitions'][0]['odds'][0], 'spread'):
+    try:
         return int(data['competitions'][0]['odds'][0], 'spread')
-    else:
-        return 0
+    except:
+        return None
 
 def extract_away_spread(data: dict) -> str:
     try:
         spread = extract_spread(data)
         return f'+{str(spread)}' if spread > 0 else str(spread)
     except:
-        return '0'
+        return None
 
 def extract_home_spread(data: dict) -> str:
     try:
         spread = extract_spread(data)
         return f'+{str(spread)}' if spread < 0 else str(spread)
     except:
-        return '0'
+        return None
 
 def extract_moneyline(data: dict) -> str:
-    if hasattr(data['competitions'][0], 'odds') and hasattr(data['competitions'][0]['odds'][0], 'details'):
+    try:
         return data['competitions'][0]['odds'][0]['details']
-    else:
-        return ''
+    except:
+        return None
 
 def extract_away_moneyline(data: dict) -> str:
     try:
         spread = extract_spread(data)
         return f'+{str(spread)}' if spread > 0 else str(spread)
     except:
-        return '0'
+        return None
 
 def extract_home_moneyline(data: dict) -> str:
     try:
         spread = extract_spread(data)
         return f'+{str(spread)}' if spread < 0 else str(spread)
     except:
-        return '0'
+        return None
 
 def extract_stadium(data: dict) -> str:
-    if hasattr(data['competitions'][0]['venue'], 'fullName'):
+    try:
         return data['competitions'][0]['venue']['fullName']
-    else:
-        return ''
+    except:
+        return None
 
 def extract_state(data: dict) -> str:
-    if hasattr(data['competitions'][0]['venue']['address'], 'state'):
+    try:
         return data['competitions'][0]['venue']['address']['state']
-    else:
-        return ''
+    except:
+        return None
 
 def extract_city(data: dict) -> str:
-    if hasattr(data['competitions'][0]['venue']['address'], 'city'):
+    try:
         return data['competitions'][0]['venue']['address']['city']
-    else:
-        return ''
+    except:
+        return None
+
