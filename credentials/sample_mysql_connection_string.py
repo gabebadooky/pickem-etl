@@ -5,5 +5,5 @@ config = {
     'password': 'my_password',
     'host': 'localhost',
     'port': 3306,
-    'database': 'my_db',
+    'database': 'my_db'
 }

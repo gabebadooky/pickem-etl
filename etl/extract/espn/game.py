@@ -38,8 +38,8 @@ class Game:
         self.stadium = extract_stadium(event)
         self.city = extract_city(event)
         self.state = extract_state(event)
-        self.latitude = l.get_lat_long_tuple(extract_stadium(event), extract_city(event), extract_state(event))[0]
-        self.longitude = l.get_lat_long_tuple(extract_stadium(event), extract_city(event), extract_state(event))[1]
+        self.latitude = 0.0#l.get_lat_long_tuple(extract_stadium(event), extract_city(event), extract_state(event))[0]
+        self.longitude = 0.0#l.get_lat_long_tuple(extract_stadium(event), extract_city(event), extract_state(event))[1]
 
 
 def extract_game_id(data: dict) -> str:

@@ -1,4 +1,4 @@
-import requests
+import requests, time
 from etl.extract.espn import game as eg
 from etl.extract.espn import team as et
 from etl.transform import transform as t
@@ -13,7 +13,14 @@ def get_all_games_in_week(espn_scoreboard_endpoint: str) -> list:
     return events
 
 def get_team(espn_team_endpoint: str) -> dict:
-    data = requests.get(espn_team_endpoint).json()
+    data_fetched = False
+    while data_fetched is not True:
+        try:
+            data = requests.get(espn_team_endpoint).json()
+            data_fetched = True
+        except Exception as e:
+            print(f'Error occurred retrieving data from {espn_team_endpoint}:\n{e}')
+            time.sleep(2)
     return data
 
 def load_game_data(game_data: object):
@@ -45,7 +52,7 @@ def extract_and_load_teams(distinct_away_teams):
     for distict_team in distinct_away_teams:
         print(f"\n\nProcessing Team {distict_team}")
         team_json = get_team(f'{cfb_espn_team_endpoint}{distict_team}')
-        print(team_json)
+        time.sleep(1.5)
         team = et.Team(team_json)
         load_team_data(team)
 
