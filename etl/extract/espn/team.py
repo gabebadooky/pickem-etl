@@ -1,6 +1,6 @@
 class Team:
     def __init__(self, team):
-        self.team_id = team['team']['id']
+        self.team_id = extract_team_id(team)
         self.cbs_code = ''
         self.espn_code = team['team']['id']
         self.fox_code = ''
@@ -41,6 +41,14 @@ class Team:
         self.opp_yards_per_rush = 0
         self.rush_touchdowns = 0
         self.opp_rush_touchdowns = 0
+
+def extract_team_id(data: dict) -> str:
+    try:
+        formatted_team_location = data['team']['location'].replace('é', 'e').replace('&', '').replace('.', '').replace(' ', '-').replace('(', '').replace(')', '').lower()
+        formatted_team_name = data['team']['name'].replace(' ', '-').replace('\'', '').lower()
+        return f"{formatted_team_location}-{formatted_team_name}"
+    except:
+        return None
 
 def extract_team_name(data: dict) -> str:
     try:

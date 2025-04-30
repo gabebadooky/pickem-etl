@@ -78,17 +78,15 @@ def get_teams(data: dict) -> dict:
 
 def extract_away_team(data: dict) -> str:
     try:
-        teams = get_teams(data)
-        away_team_id = teams['away']
+        away_team_id = data['name'].split(' at ')[0].replace(' ', '-')
     except:
         print(f'Error occurred extracting away_team for game {extract_game_id(data)}')
-        away_team_id = '0'
+        away_team_id = 'away-team'
     return away_team_id
 
 def extract_home_team(data: dict) -> str:
     try:
-        teams = get_teams(data)
-        home_team_id = teams['home']
+        home_team_id = data['name'].split(' at ')[1].replace(' ', '-')
     except:
         print(f'Error occurred extracting home_team for game {extract_game_id(data)}')
         home_team_id = '0'

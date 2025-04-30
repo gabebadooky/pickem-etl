@@ -42,9 +42,10 @@ def extract_and_load_games(weeks):
         week += 1
         cfb_week_response = get_all_games_in_week(f'{cfb_espn_scoreboard_endpoint}{week}')
         for cfb_game_json in cfb_week_response:
-            print(f"\n\nProcessing Game {cfb_game_json['id']}")
+            print(f"\n\nProcessing ESPN Game {cfb_game_json['id']}")
             game = eg.Game(cfb_game_json, 'CFB')
-            distinct_away_teams.add(game.away_team_id)
+            distinct_away_teams.add(cfb_game_json['competitions'][0]['competitors'][0]['team']['id'])
+            distinct_away_teams.add(cfb_game_json['competitions'][0]['competitors'][1]['team']['id'])
             load_game_data(game)
     return distinct_away_teams
 
