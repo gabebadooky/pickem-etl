@@ -45,7 +45,7 @@ class Team:
 def extract_team_id(data: dict) -> str:
     try:
         formatted_team_location = data['team']['location'].replace('é', 'e').replace('&', '').replace('.', '').replace(' ', '-').replace('(', '').replace(')', '').lower()
-        formatted_team_name = data['team']['name'].replace(' ', '-').replace('\'', '').lower()
+        formatted_team_name = data['team']['name'].replace('é', 'e').replace('&', '').replace('.', '').replace(' ', '-').replace('(', '').replace(')', '').lower()
         return f"{formatted_team_location}-{formatted_team_name}"
     except:
         return None

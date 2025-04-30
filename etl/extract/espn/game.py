@@ -43,7 +43,7 @@ class Game:
 
 
 def extract_game_id(data: dict) -> str:
-    return data['name'].replace(' ', '-').replace('\'', '')
+    return data['name'].replace('é', 'e').replace('&', '').replace('.', '').replace(' ', '-').replace('(', '').replace(')', '').lower()
 
 def extract_game_week(data: dict) -> int:
     if hasattr(data['week'], 'number'):
@@ -78,7 +78,7 @@ def get_teams(data: dict) -> dict:
 
 def extract_away_team(data: dict) -> str:
     try:
-        away_team_id = data['name'].split(' at ')[0].replace(' ', '-')
+        away_team_id = data['name'].split(' at ')[0].replace('é', 'e').replace('&', '').replace('.', '').replace(' ', '-').replace('(', '').replace(')', '').lower()
     except:
         print(f'Error occurred extracting away_team for game {extract_game_id(data)}')
         away_team_id = 'away-team'
@@ -86,10 +86,10 @@ def extract_away_team(data: dict) -> str:
 
 def extract_home_team(data: dict) -> str:
     try:
-        home_team_id = data['name'].split(' at ')[1].replace(' ', '-')
+        home_team_id = data['name'].split(' at ')[1].replace('é', 'e').replace('&', '').replace('.', '').replace(' ', '-').replace('(', '').replace(')', '').lower()
     except:
         print(f'Error occurred extracting home_team for game {extract_game_id(data)}')
-        home_team_id = '0'
+        home_team_id = 'home-team'
     return home_team_id
 
 def extract_broadcast(data: dict) -> str:
