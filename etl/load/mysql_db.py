@@ -1,7 +1,7 @@
 import mysql.connector
 from credentials import mysql_connection_string as database_connection
 
-def instantiate_procedure_params(data_dict):
+def instantiate_procedure_params(data_dict: dict):
     procedure_params = f""
     for key in data_dict:
         dict_key = data_dict[key]

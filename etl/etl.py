@@ -4,8 +4,6 @@ from etl.extract.espn import team as et
 from etl.transform import transform as t
 from etl.load import mysql_db as ld
 
-cfb_espn_scoreboard_endpoint = f'https://site.api.espn.com/apis/site/v2/sports/football/college-football/scoreboard?seasontype=2&week='
-cfb_espn_team_endpoint = f'http://site.api.espn.com/apis/site/v2/sports/football/college-football/teams/'
 
 def get_all_games_in_week(espn_scoreboard_endpoint: str) -> list:
     data = requests.get(espn_scoreboard_endpoint).json()
@@ -36,23 +34,26 @@ def load_team_data(team_data: object):
     ld.load_team_stats(t.format_team_stats(team_data))
     ld.load_team(t.format_team(team_data))
 
-def extract_and_load_games(weeks):
-    distinct_away_teams = set()
+
+
+def extract_and_load_games(league: str, weeks: int, espn_scoreboard_endpoint: str):
+    distinct_teams = set()
     for week in range(weeks):
         week += 1
-        cfb_week_response = get_all_games_in_week(f'{cfb_espn_scoreboard_endpoint}{week}')
-        for cfb_game_json in cfb_week_response:
-            print(f"\n\nProcessing ESPN Game {cfb_game_json['id']}")
-            game = eg.Game(cfb_game_json, 'CFB')
-            distinct_away_teams.add(cfb_game_json['competitions'][0]['competitors'][0]['team']['id'])
-            distinct_away_teams.add(cfb_game_json['competitions'][0]['competitors'][1]['team']['id'])
+        week_response = get_all_games_in_week(f'{espn_scoreboard_endpoint}{week}')
+        for game_json in week_response:
+            print(f"\n\nProcessing ESPN {league} Game {game_json['id']}")
+            game = eg.Game(game_json, league)
+            distinct_teams.add(game_json['competitions'][0]['competitors'][0]['team']['id'])
+            distinct_teams.add(game_json['competitions'][0]['competitors'][1]['team']['id'])
             load_game_data(game)
-    return distinct_away_teams
+    return distinct_teams
 
-def extract_and_load_teams(distinct_away_teams):
-    for distict_team in distinct_away_teams:
-        print(f"\n\nProcessing Team {distict_team}")
-        team_json = get_team(f'{cfb_espn_team_endpoint}{distict_team}')
+
+def extract_and_load_teams(league: str, distinct_teams: set, espn_team_endpoint: str):
+    for distict_team in distinct_teams:
+        print(f"\n\nProcessing {league} Team {distict_team}")
+        team_json = get_team(f'{espn_team_endpoint}{distict_team}')
         time.sleep(1.5)
         team = et.Team(team_json)
         load_team_data(team)

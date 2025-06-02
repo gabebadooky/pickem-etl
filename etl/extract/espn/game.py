@@ -1,7 +1,7 @@
 from etl.extract import geocodes as l
 
 class Game:
-    def __init__(self, event, league):
+    def __init__(self, event: object, league: str):
         self.game_id = extract_game_id(event)
         self.league = league
         self.week = event['week']['number']

@@ -1,5 +1,5 @@
 class Team:
-    def __init__(self, team):
+    def __init__(self, team: object):
         self.team_id = extract_team_id(team)
         self.cbs_code = ''
         self.espn_code = team['team']['id']
