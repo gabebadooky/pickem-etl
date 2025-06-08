@@ -26,13 +26,34 @@ class Game:
         self.home_q4_score: int
         self.home_overtime_score: int
         self.home_total_score: int
-        self.away_moneyline: str
-        self.home_moneyline: str
-        self.away_spread: str
-        self.home_spread: str
-        self.over_under: str
-        self.away_win_percentage: str
-        self.home_win_percentage: str
+        self.espn_away_moneyline: str
+        self.espn_home_moneyline: str
+        self.espn_away_spread: str
+        self.espn_home_spread: str
+        self.espn_over_under: str
+        self.espn_away_win_percentage: str
+        self.espn_home_win_percentage: str
+        self.cbs_away_moneyline: str
+        self.cbs_home_moneyline: str
+        self.cbs_away_spread: str
+        self.cbs_home_spread: str
+        self.cbs_over_under: str
+        self.cbs_away_win_percentage: str
+        self.cbs_home_win_percentage: str
+        self.fox_away_moneyline: str
+        self.fox_home_moneyline: str
+        self.fox_away_spread: str
+        self.fox_home_spread: str
+        self.fox_over_under: str
+        self.fox_away_win_percentage: str
+        self.fox_home_win_percentage: str
+        self.vegas_away_moneyline: str
+        self.vegas_home_moneyline: str
+        self.vegas_away_spread: str
+        self.vegas_home_spread: str
+        self.vegas_over_under: str
+        self.vegas_away_win_percentage: str
+        self.vegas_home_win_percentage: str
         self.stadium: str
         self.city: str
         self.state: str
