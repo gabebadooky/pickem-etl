@@ -1,8 +1,8 @@
 from etl import etl
 
 cfb_weeks = 14
-cfb_espn_scoreboard_endpoint = f'https://site.api.espn.com/apis/site/v2/sports/football/college-football/scoreboard?seasontype=2&week='
-cfb_espn_team_endpoint = f'http://site.api.espn.com/apis/site/v2/sports/football/college-football/teams/'
+cfb_espn_scoreboard_endpoint = f"https://site.api.espn.com/apis/site/v2/sports/football/college-football/scoreboard?seasontype=2&week="
+cfb_espn_team_endpoint = f"http://site.api.espn.com/apis/site/v2/sports/football/college-football/teams/"
 
 nfl_weeks = 18
 nfl_espn_scoreboard_endpoint = f"http://site.api.espn.com/apis/site/v2/sports/football/nfl/scoreboard?seasontype=2&week="

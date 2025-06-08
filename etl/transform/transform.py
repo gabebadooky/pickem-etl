@@ -48,16 +48,16 @@ def format_home_box_score(game: object) -> dict:
 def format_odds(game: object) -> dict:
     if len(game.espn_code) > 1:
         gamecode = game.espn_code
-        source = 'ESPN'
+        source = "ESPN"
     elif len(game.cbs_code) > 1:
         gamecode = game.cbs_code
-        source = 'CBS'
+        source = "CBS"
     elif len(game.fox_code) > 1:
         gamecode = game.vegas_code
-        source = 'FOX'
+        source = "FOX"
     else:
-        gamecode = '0'
-        source = 'ERR'
+        gamecode = "0"
+        source = "ERR"
 
     odds = dict(
         game_id = game.game_id,
@@ -105,7 +105,7 @@ def format_team(team: object) -> dict:
 def format_conference_record(team: object) -> dict:
     conference_record = dict(
         team_id = team.team_id,
-        record_type = 'CONFERENCE',
+        record_type = "CONFERENCE",
         wins = team.conference_wins,
         losses = team.conference_losses,
         ties = team.conference_ties
@@ -115,7 +115,7 @@ def format_conference_record(team: object) -> dict:
 def format_overall_record(team: object) -> dict:
     overall_record = dict(
         team_id = team.team_id,
-        record_type = 'OVERALL',
+        record_type = "OVERALL",
         wins = 0,
         losses = 0,
         ties = 0
@@ -124,20 +124,20 @@ def format_overall_record(team: object) -> dict:
 
 def format_team_stats(team: object) -> list:
     team_stats = []
-    stat_types = ['pass_attempts', 'opp_pass_attempts',
-                  'pass_completions', 'opp_pass_completions',
-                  'completion_percentage', 'opp_completion_percentage',
-                  'pass_yards', 'opp_pass_yards',
-                  'pass_touchdowns', 'opp_pass_touchdowns',
-                  'offense_interceptions', 'defense_interceptions',
-                  'rush_yards', 'opp_rush_yards',
-                  'rush_attempts', 'opp_rush_attempts',
-                  'yards_per_rush', 'opp_yards_per_rush',
-                  'rush_touchdowns', 'opp_rush_touchdowns']
+    stat_types = ["pass_attempts", "opp_pass_attempts",
+                  "pass_completions", "opp_pass_completions",
+                  "completion_percentage", "opp_completion_percentage",
+                  "pass_yards", "opp_pass_yards",
+                  "pass_touchdowns", "opp_pass_touchdowns",
+                  "offense_interceptions", "defense_interceptions",
+                  "rush_yards", "opp_rush_yards",
+                  "rush_attempts", "opp_rush_attempts",
+                  "yards_per_rush", "opp_yards_per_rush",
+                  "rush_touchdowns", "opp_rush_touchdowns"]
     for stat_type in stat_types:
         team_stats.append({
-            'team_id': team.team_id,
-            'type': stat_type,
-            'value': getattr(team, stat_type)
+            "team_id": team.team_id,
+            "type": stat_type,
+            "value": getattr(team, stat_type)
         })
     return team_stats

@@ -7,7 +7,7 @@ from etl.load import mysql_db as ld
 
 def get_all_games_in_week(espn_scoreboard_endpoint: str) -> list:
     data = requests.get(espn_scoreboard_endpoint).json()
-    events = data['events']
+    events = data["events"]
     return events
 
 def get_team(espn_team_endpoint: str) -> dict:
@@ -17,7 +17,7 @@ def get_team(espn_team_endpoint: str) -> dict:
             data = requests.get(espn_team_endpoint).json()
             data_fetched = True
         except Exception as e:
-            print(f'Error occurred retrieving data from {espn_team_endpoint}:\n{e}')
+            print(f"Error occurred retrieving data from {espn_team_endpoint}:\n{e}")
             time.sleep(2)
     return data
 
@@ -40,12 +40,12 @@ def extract_and_load_games(league: str, weeks: int, espn_scoreboard_endpoint: st
     distinct_teams = set()
     for week in range(weeks):
         week += 1
-        week_response = get_all_games_in_week(f'{espn_scoreboard_endpoint}{week}')
+        week_response = get_all_games_in_week(f"{espn_scoreboard_endpoint}{week}")
         for game_json in week_response:
-            print(f"\n\nProcessing ESPN {league} Game {game_json['id']}")
+            print(f"\n\nProcessing ESPN {league} Game {game_json["id"]}")
             game = eg.Game(game_json, league)
-            distinct_teams.add(game_json['competitions'][0]['competitors'][0]['team']['id'])
-            distinct_teams.add(game_json['competitions'][0]['competitors'][1]['team']['id'])
+            distinct_teams.add(game_json["competitions"][0]["competitors"][0]["team"]["id"])
+            distinct_teams.add(game_json["competitions"][0]["competitors"][1]["team"]["id"])
             load_game_data(game)
     return distinct_teams
 
@@ -53,7 +53,7 @@ def extract_and_load_games(league: str, weeks: int, espn_scoreboard_endpoint: st
 def extract_and_load_teams(league: str, distinct_teams: set, espn_team_endpoint: str):
     for distict_team in distinct_teams:
         print(f"\n\nProcessing {league} Team {distict_team}")
-        team_json = get_team(f'{espn_team_endpoint}{distict_team}')
+        team_json = get_team(f"{espn_team_endpoint}{distict_team}")
         time.sleep(1.5)
         team = et.Team(team_json)
         load_team_data(team)
