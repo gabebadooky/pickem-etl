@@ -13,7 +13,7 @@ class Game:
         self.date: str
         self.time: str
         self.tv_coverage: str
-        self.game_finished: int
+        self.finished: int
         self.away_q1_score: int
         self.away_q2_score: int
         self.away_q3_score: int
