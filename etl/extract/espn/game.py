@@ -2,12 +2,23 @@ def extract_game_id(data: dict) -> str:
     """Method to extract game_id from ESPN game endpoint response"""
     return data["name"].replace("é", "e").replace("&", "").replace(".", "").replace(" ", "-").replace("(", "").replace(")", "").lower()
 
+def extract_game_code(data: dict) -> int:
+    """Method to extract game code from ESPN game endpoint response"""
+    return data["id"]
+
 def extract_game_week(data: dict) -> int:
     """Method to extract game week from ESPN game endpoint response"""
     if hasattr(data["week"], "number"):
         return data["week"]["number"]
     else:
         return -1
+
+def extract_game_year(data: dict) -> int:
+    """Method to extract game year from ESPN game endpoint response"""
+    if hasattr(data["season"], "year"):
+        return data["week"]["number"]
+    else:
+        return 2025
 
 def extract_game_time(data: dict) -> str:
     """Method to extract game time from ESPN game endpoint response"""

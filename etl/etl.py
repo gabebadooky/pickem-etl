@@ -2,6 +2,9 @@ import requests, time
 import etl.extract.espn.game as eg
 import etl.extract.cbs.game as cg
 import etl.extract.geocodes as el
+import etl.extract.espn.team as et
+import etl.extract.cbs.team_stats as ct
+from bs4 import BeautifulSoup
 from etl.extract.game import Game
 from etl.extract.team import Team
 from etl.transform import transform as t
@@ -26,6 +29,22 @@ def get_espn_team(espn_team_endpoint: str) -> dict:
             time.sleep(2)
     return data
 
+def scrape_cbs_games_in_week(cbs_scoreboard_week_url: str) -> str:
+    """Method to scrape CBS scoreboard page for give, week"""
+    page_response: requests.Response = requests.get(cbs_scoreboard_week_url)
+    return BeautifulSoup(page_response, "html.parser")
+
+def find_cbs_game_scorecard(page_soup: str, game_id: str) -> str:
+    """Method to find scorecard for current game"""
+    team_links: list = page_soup.find_all("a", class_="team-name-link")
+    for team_link in team_links:
+        reformatted_team: str = team_link.get_text().replace("é", "e").replace("&", "").replace(".", "").replace(" ", "-").replace("(", "").replace(")", "").lower()
+        if reformatted_team in game_id:
+            for parent in team_link.parents:
+                parent_element: str = parent
+                if parent_element == "div" and parent_element["class"] == "single-score-card":
+                    return parent_element
+
 def load_game_data(game_data: object):
     """Method to consolidate and load game data from various sources"""
     ld.load_box_scores(t.format_away_box_score(game_data))
@@ -44,21 +63,24 @@ def load_team_data(team_data: object):
 
 
 
-def extract_and_load_games(league: str, weeks: int, espn_scoreboard_endpoint: str):
+def extract_and_load_games(league: str, weeks: int, espn_scoreboard_endpoint: str, cbs_scoreboard_week_url: str):
     """Method to perfom ETL process for games data from various sources"""
     distinct_teams: set = set()
     for week in range(weeks):
         week += 1
-        week_response: list = get_all_espn_games_in_week(f"{espn_scoreboard_endpoint}{week}")
-        for espn_game_json in week_response:
+        espn_week_response: list = get_all_espn_games_in_week(f"{espn_scoreboard_endpoint}{week}")
+        cbs_week_response: str = scrape_cbs_games_in_week(f"{cbs_scoreboard_week_url}/{week}")
+        for espn_game_json in espn_week_response:
             print(f"\n\nProcessing ESPN {league} Game {espn_game_json["id"]}")
             game: Game = Game()
-            game.game_id = eg.extract_game_id(espn_game_json)
+            game_id = eg.extract_game_id(espn_game_json)
+            game.game_id = game_id
             game.league = league
             game.week = week
-            game.year = 2025 # TODO: Retreive year from game_json
+            game.year = eg.extract_game_year(espn_game_json)
+            game.espn_code = eg.extract_game_code(espn_game_json)
             game.cbs_code = cg.get_cbs_code() # Scrape CBS game scorebaord
-            #game.fox_code = 
+            # game.fox_code = 
             # game.vegas_code = 
             game.away_team_id = eg.extract_away_team(espn_game_json)
             game.home_team_id = eg.extract_home_team(espn_game_json)
@@ -120,7 +142,7 @@ def extract_and_load_teams(league: str, distinct_teams: set, espn_team_endpoint:
     """Method to perfom ETL process for teams data from various sources"""
     for distict_team in distinct_teams:
         print(f"\n\nProcessing {league} Team {distict_team}")
-        team_json: dict = get_espn_team(f"{espn_team_endpoint}{distict_team}")
+        team_json: dict = get_espn_team(f"{espn_team_endpoint}/{distict_team}")
         time.sleep(1.5)
         team: Team = et.Team(team_json)
         load_team_data(team)
