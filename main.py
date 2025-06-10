@@ -3,7 +3,7 @@ from etl import etl
 cfb_weeks: int = 14
 cfb_espn_scoreboard_endpoint: str = "https://site.api.espn.com/apis/site/v2/sports/football/college-football/scoreboard?seasontype=2&week="
 cfb_espn_team_endpoint: str = "http://site.api.espn.com/apis/site/v2/sports/football/college-football/teams"
-cfb_cbs_scoreboard_endpoint: str = "https://www.cbssports.com/college-football/scoreboard/FBS/2025/regular"
+cbs_scoreboard_week_url: str = "https://www.cbssports.com/college-football/scoreboard/FBS/2025/regular"
 
 nfl_weeks: int = 18
 nfl_espn_scoreboard_endpoint: str = f"http://site.api.espn.com/apis/site/v2/sports/football/nfl/scoreboard?seasontype=2&week="
@@ -20,13 +20,13 @@ def incremental_etl(league: str, weeks: int, espn_scoreboard_endpoint: str, cbs_
 
 
 # CFB Full ETL
-# full_etl("CFB", cfb_weeks, cfb_espn_scoreboard_endpoint, cfb_espn_team_endpoint, cbs_scoreboard_week_url)
+full_etl("CFB", cfb_weeks, cfb_espn_scoreboard_endpoint, cfb_espn_team_endpoint, cbs_scoreboard_week_url)
 
 # CFB Incremental ETL
 # incremental_etl("CFB", cfb_weeks, cfb_espn_scoreboard_endpoint, cbs_scoreboard_week_url)
 
 # NFL Full ETL
-full_etl("NFL", nfl_weeks, nfl_espn_scoreboard_endpoint, nfl_espn_team_endpoint)
+# full_etl("NFL", nfl_weeks, nfl_espn_scoreboard_endpoint, nfl_espn_team_endpoint)
 
 # NFL Incremental ETL
 # incremental_etl("NFL", nfl_weeks, nfl_espn_scoreboard_endpoint)

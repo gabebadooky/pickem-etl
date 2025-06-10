@@ -29,20 +29,27 @@ def get_espn_team(espn_team_endpoint: str) -> dict:
             time.sleep(2)
     return data
 
-def scrape_cbs_games_in_week(cbs_scoreboard_week_url: str) -> str:
+def scrape_cbs_games_in_week(cbs_scoreboard_week_url: str) -> BeautifulSoup:
     """Method to scrape CBS scoreboard page for give, week"""
     page_response: requests.Response = requests.get(cbs_scoreboard_week_url)
-    return BeautifulSoup(page_response, "html.parser")
+    return BeautifulSoup(page_response.content, "html.parser")
 
-def find_cbs_game_scorecard(page_soup: str, game_id: str) -> str:
+def find_cbs_game_scorecard(page_soup: str, game_id: str) -> BeautifulSoup:
     """Method to find scorecard for current game"""
+    print(game_id)
     team_links: list = page_soup.find_all("a", class_="team-name-link")
     for team_link in team_links:
-        reformatted_team: str = team_link.get_text().replace("é", "e").replace("&", "").replace(".", "").replace(" ", "-").replace("(", "").replace(")", "").lower()
+        print(f"team_link: {team_link}")
+        #reformatted_team: str = team_link.get_text().replace("é", "e").replace("&", "").replace(".", "").replace(" ", "-").replace("(", "").replace(")", "").lower()
+        ending_index: int = team_link["href"].rfind('/')
+        beginning_index: int = team_link["href"].rfind('/', 0, ending_index) + 1
+        reformatted_team: str = team_link["href"][beginning_index:ending_index]
+        print(reformatted_team)
         if reformatted_team in game_id:
+            print("team found!")
             for parent in team_link.parents:
                 parent_element: str = parent
-                if parent_element == "div" and parent_element["class"] == "single-score-card":
+                if parent_element.name == "div" and "single-score-card" in parent_element.get("class", []):
                     return parent_element
 
 def load_game_data(game_data: object):
@@ -69,17 +76,19 @@ def extract_and_load_games(league: str, weeks: int, espn_scoreboard_endpoint: st
     for week in range(weeks):
         week += 1
         espn_week_response: list = get_all_espn_games_in_week(f"{espn_scoreboard_endpoint}{week}")
-        cbs_week_response: str = scrape_cbs_games_in_week(f"{cbs_scoreboard_week_url}/{week}")
+        cbs_week_content: BeautifulSoup = scrape_cbs_games_in_week(f"{cbs_scoreboard_week_url}/{week}")
         for espn_game_json in espn_week_response:
             print(f"\n\nProcessing ESPN {league} Game {espn_game_json["id"]}")
             game: Game = Game()
             game_id = eg.extract_game_id(espn_game_json)
+            cbs_game_scorecard_soup: BeautifulSoup = find_cbs_game_scorecard(cbs_week_content, game_id)
+            print(cbs_game_scorecard_soup)
             game.game_id = game_id
             game.league = league
             game.week = week
             game.year = eg.extract_game_year(espn_game_json)
             game.espn_code = eg.extract_game_code(espn_game_json)
-            game.cbs_code = cg.get_cbs_code() # Scrape CBS game scorebaord
+            game.cbs_code = cg.get_cbs_code(cbs_game_scorecard_soup) # Scrape CBS game scorebaord
             # game.fox_code = 
             # game.vegas_code = 
             game.away_team_id = eg.extract_away_team(espn_game_json)
@@ -107,11 +116,11 @@ def extract_and_load_games(league: str, weeks: int, espn_scoreboard_endpoint: st
             game.espn_over_under = eg.extract_over_under(espn_game_json)
             # game.espn_away_win_percentage = 
             # game.espn_home_win_percentage = 
-            game.cbs_away_moneyline = cg.get_away_moneyline()
-            game.cbs_home_moneyline = cg.get_home_moneyline()
+            # game.cbs_away_moneyline = cg.get_away_moneyline()
+            # game.cbs_home_moneyline = cg.get_home_moneyline()
             # game.cbs_away_spread = 
             # game.cbs_home_spread = 
-            game.cbs_over_under = cg.get_over_under()
+            # game.cbs_over_under = cg.get_over_under()
             # game.cbs_away_win_percentage = 
             # game.cbs_home_win_percentage = 
             # fox odds metrics ...
