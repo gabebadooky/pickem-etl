@@ -1,8 +1,8 @@
 class Team:
-    def __init__(self, team: object):
+    def __init__(self):
         self.team_id: str
-        self.cbs_code: str
         self.espn_code: str
+        self.cbs_code: str
         self.fox_code: str
         self.vegas_code: str
         self.conference_code: str

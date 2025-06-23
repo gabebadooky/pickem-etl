@@ -1,11 +1,11 @@
 import mysql.connector
-from credentials import mysql_connection_string as database_connection
+from config import db_config
 
 def instantiate_procedure_params(data_dict: dict) -> str:
     """Method to convert dictionary keys into SQL statement VALUES parameters for database load"""
-    procedure_params: str
+    procedure_params: str = ""
     for key in data_dict:
-        dict_key = data_dict[key]
+        dict_key: any = data_dict[key]
         if isinstance(dict_key, int) or isinstance(dict_key, float):
             procedure_params += f"{dict_key}, "
         elif dict_key is None:
@@ -19,7 +19,7 @@ def instantiate_procedure_params(data_dict: dict) -> str:
 def call_proc(sql: str) -> None:
     """Method to call given database procedure"""
     print(sql)
-    conn = mysql.connector.connect(**database_connection.config)
+    conn = mysql.connector.connect(**db_config)
     cursor = conn.cursor()
     cursor.execute(sql)
     conn.commit()
@@ -59,11 +59,12 @@ def load_location(location: dict) -> None:
     sql_statement: str = f"CALL PROC_LOAD_LOCATION({procedure_params});"
     call_proc(sql_statement)
 
-def load_odds(odds: dict) -> None:
+def load_odds(odds: list) -> None:
     """Method to construct and call SQL to load odds into MySQL Database"""
-    procedure_params: str = instantiate_procedure_params(odds)
-    sql_statement: str = f"CALL PROC_LOAD_ODDS({procedure_params});"
-    call_proc(sql_statement)
+    for src in odds:
+        procedure_params: str = instantiate_procedure_params(src)
+        sql_statement: str = f"CALL PROC_LOAD_ODDS({procedure_params});"
+        call_proc(sql_statement)
 
 def load_game(game: dict) -> None:
     """Method to construct and call SQL to load game into MySQL Database"""

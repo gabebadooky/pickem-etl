@@ -1,10 +1,10 @@
 import requests, time
-from credentials.open_cage_api_key import key
+from config import open_cage_api_key
 
 
-def call_geocode_api(stadium: str, city: str, state: str=None) -> dict:
+def __call_geocode_api__(stadium: str, city: str, state: str=None) -> dict:
     """Method to retrieve data from OpenCage forward geocode endpoint"""
-    open_cage_geocode_endpoint: str = f"https://api.opencagedata.com/geocode/v1/json?key={key}"
+    open_cage_geocode_endpoint: str = f"https://api.opencagedata.com/geocode/v1/json?key={open_cage_api_key}"
     formatted_stadium: str = stadium.replace(" ", "+").replace("&", "")
     formatted_city: str = city.replace(" ", "+")
     data: dict
@@ -24,7 +24,7 @@ def call_geocode_api(stadium: str, city: str, state: str=None) -> dict:
 
 
 def get_lat_long_tuple(stadium: str, city: str, state=None) -> tuple:
-    data: dict = call_geocode_api(stadium, city, state)
+    data: dict = __call_geocode_api__(stadium, city, state)
     latitude: float
     longitude: float
 

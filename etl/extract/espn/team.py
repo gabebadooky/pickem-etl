@@ -1,9 +1,16 @@
 def extract_team_id(data: dict) -> str:
     """Method to extract and construct custom team_id from ESPN team endpoint response"""
     try:
-        formatted_team_location: str = data["team"]["location"].replace("é", "e").replace("&", "").replace(".", "").replace(" ", "-").replace("(", "").replace(")", "").lower()
-        formatted_team_name: str = data["team"]["name"].replace("é", "e").replace("&", "").replace(".", "").replace(" ", "-").replace("(", "").replace(")", "").lower()
+        formatted_team_location: str = data["team"]["location"].replace("é", "e").replace("&", "").replace(".", "").replace(" ", "-").replace("(", "").replace(")", "").replace("'", "").replace("--", "-").lower()
+        formatted_team_name: str = data["team"]["name"].replace("é", "e").replace("&", "").replace(".", "").replace(" ", "-").replace("(", "").replace(")", "").replace("'", "").replace("--", "-").lower()
         return f"{formatted_team_location}-{formatted_team_name}"
+    except:
+        return None
+
+def extract_team_code(data: dict) -> str:
+    """Method to extract Team ID property from ESPN team endpoint response"""
+    try:
+        return data["team"]["id"]
     except:
         return None
 

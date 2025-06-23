@@ -19,7 +19,7 @@ def format_game(game: Game) -> dict:
         tv_coverage = game.tv_coverage,
         stadium = game.stadium,
         city = game.city,
-        game_finished = game.game_finished
+        game_finished = game.finished
     )
     return game_dict
 
@@ -51,34 +51,33 @@ def format_home_box_score(game: Game) -> dict:
     )
     return home_box_score
 
-def format_odds(game: Game) -> dict:
+def format_odds(game: Game) -> list:
     """Method to transform game object into Odds dictionary for database load"""
-    if len(game.espn_code) > 1:
-        gamecode = game.espn_code
-        source = "ESPN"
-    elif len(game.cbs_code) > 1:
-        gamecode = game.cbs_code
-        source = "CBS"
-    elif len(game.fox_code) > 1:
-        gamecode = game.vegas_code
-        source = "FOX"
-    else:
-        gamecode = "0"
-        source = "ERR"
-
-    odds = dict(
+    espn_odds: dict = dict(
         game_id = game.game_id,
-        game_code = gamecode,
-        source = source,
-        away_moneyline = game.away_moneyline,
-        home_moneyline = game.home_moneyline,
-        away_spread = game.away_spread,
-        home_spread = game.home_spread,
-        over_under = game.over_under,
-        away_win_percentage = game.away_win_percentage,
-        home_win_percentage = game.home_win_percentage
+        game_code = game.espn_code,
+        source = "ESPN",
+        espn_away_moneyline = game.espn_away_moneyline,
+        espn_home_moneyline = game.espn_home_moneyline,
+        away_spread = game.espn_away_spread,
+        espn_home_spread = game.espn_home_spread,
+        espn_over_under = game.espn_over_under,
+        espn_away_win_percentage = game.espn_away_win_percentage,
+        espn_home_win_percentage = game.espn_home_win_percentage
     )
-    return odds
+    cbs_odds: dict = dict(
+            game_id = game.game_id,
+            game_code = game.cbs_code,
+            source = "CBS",
+            cbs_away_moneyline = game.cbs_away_moneyline,
+            cbs_home_moneyline = game.cbs_home_moneyline,
+            cbs_away_spread = game.cbs_away_spread,
+            cbs_home_spread = game.cbs_home_spread,
+            cbs_over_under = game.cbs_over_under,
+            cbs_away_win_percentage = game.cbs_away_win_percentage,
+            cbs_home_win_percentage = game.cbs_home_win_percentage
+        )    
+    return [espn_odds, cbs_odds]
 
 def format_location(game: Game) -> dict:
     """Method to transform game object into Location dictionary for database load"""
@@ -104,7 +103,7 @@ def format_team(team: Team) -> dict:
         division_name = team.division_name,
         team_name = team.team_name,
         team_mascot = team.team_mascot,
-        g5_conference = team.g5_conference,
+        power_conference = team.power_conference,
         team_logo_url = team.team_logo_url,
         primary_color = team.primary_color,
         alternate_color = team.alternate_color
@@ -135,7 +134,7 @@ def format_overall_record(team: Team) -> dict:
 
 def format_team_stats(team: Team) -> list:
     """Method to transform team object into Team Stats list for database load"""
-    team_stats: list
+    team_stats: list = []
     stat_types = ["pass_attempts", "opp_pass_attempts",
                   "pass_completions", "opp_pass_completions",
                   "completion_percentage", "opp_completion_percentage",
@@ -146,6 +145,7 @@ def format_team_stats(team: Team) -> list:
                   "rush_attempts", "opp_rush_attempts",
                   "yards_per_rush", "opp_yards_per_rush",
                   "rush_touchdowns", "opp_rush_touchdowns"]
+    
     for stat_type in stat_types:
         team_stats.append({
             "team_id": team.team_id,

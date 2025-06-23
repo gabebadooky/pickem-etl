@@ -1,6 +1,6 @@
 def extract_game_id(data: dict) -> str:
     """Method to extract game_id from ESPN game endpoint response"""
-    return data["name"].replace("é", "e").replace("&", "").replace(".", "").replace(" ", "-").replace("(", "").replace(")", "").lower()
+    return data["name"].replace("é", "e").replace("&", "").replace(".", "").replace(" ", "-").replace("(", "").replace(")", "").replace("'", "").replace("--", "-").lower()
 
 def extract_game_code(data: dict) -> int:
     """Method to extract game code from ESPN game endpoint response"""
@@ -52,7 +52,7 @@ def extract_away_team(data: dict) -> str:
     """Method to extract away_team_id from ESPN game endpoint response"""
     away_team_id: str
     try:
-        away_team_id = data["name"].split(" at ")[0].replace("é", "e").replace("&", "").replace(".", "").replace(" ", "-").replace("(", "").replace(")", "").lower()
+        away_team_id = data["name"].split(" at ")[0].replace("é", "e").replace("&", "").replace(".", "").replace(" ", "-").replace("(", "").replace(")", "").replace("'", "").replace("--", "-").lower()
     except:
         print(f"Error occurred extracting away_team for game {extract_game_id(data)}")
         away_team_id = "away-team"
@@ -62,7 +62,7 @@ def extract_home_team(data: dict) -> str:
     """Method to extract home_team_id from ESPN game endpoint response"""
     home_team_id: str
     try:
-        home_team_id = data["name"].split(" at ")[1].replace("é", "e").replace("&", "").replace(".", "").replace(" ", "-").replace("(", "").replace(")", "").lower()
+        home_team_id = data["name"].split(" at ")[1].replace("é", "e").replace("&", "").replace(".", "").replace(" ", "-").replace("(", "").replace(")", "").replace("'", "").replace("--", "-").lower()
     except:
         print(f"Error occurred extracting home_team for game {extract_game_id(data)}")
         home_team_id = "home-team"
