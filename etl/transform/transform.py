@@ -51,7 +51,7 @@ def format_home_box_score(game: Game) -> dict:
     )
     return home_box_score
 
-def format_odds(game: Game) -> list:
+def format_odds(game: Game) -> list[dict]:
     """Method to transform game object into Odds dictionary for database load"""
     espn_odds: dict = dict(
         game_id = game.game_id,
@@ -66,17 +66,17 @@ def format_odds(game: Game) -> list:
         espn_home_win_percentage = game.espn_home_win_percentage
     )
     cbs_odds: dict = dict(
-            game_id = game.game_id,
-            game_code = game.cbs_code,
-            source = "CBS",
-            cbs_away_moneyline = game.cbs_away_moneyline,
-            cbs_home_moneyline = game.cbs_home_moneyline,
-            cbs_away_spread = game.cbs_away_spread,
-            cbs_home_spread = game.cbs_home_spread,
-            cbs_over_under = game.cbs_over_under,
-            cbs_away_win_percentage = game.cbs_away_win_percentage,
-            cbs_home_win_percentage = game.cbs_home_win_percentage
-        )    
+        game_id = game.game_id,
+        game_code = game.cbs_code,
+        source = "CBS",
+        cbs_away_moneyline = game.cbs_away_moneyline,
+        cbs_home_moneyline = game.cbs_home_moneyline,
+        cbs_away_spread = game.cbs_away_spread,
+        cbs_home_spread = game.cbs_home_spread,
+        cbs_over_under = game.cbs_over_under,
+        cbs_away_win_percentage = game.cbs_away_win_percentage,
+        cbs_home_win_percentage = game.cbs_home_win_percentage
+    )    
     return [espn_odds, cbs_odds]
 
 def format_location(game: Game) -> dict:
@@ -94,6 +94,7 @@ def format_team(team: Team) -> dict:
     """Method to transform team object into Team dictionary for database load"""
     team = dict(
         team_id = team.team_id,
+        league = team.league,
         cbs_code = team.cbs_code,
         espn_code = team.espn_code,
         fox_code = team.fox_code,
