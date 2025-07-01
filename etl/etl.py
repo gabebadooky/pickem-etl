@@ -5,12 +5,15 @@ import etl.extract.opencage.geocodes as el
 import etl.extract.espn.team as et
 import etl.extract.cbs.team as ct
 import etl.extract.cbs.team_stats as cts
+import etl.load.mysql_db as ld
 import etl.TeamMapping as tm
 from bs4 import BeautifulSoup
 from etl.extract.game import Game
 from etl.extract.team import Team
 from etl.transform import transform as t
 from etl.load import mysql_db as ld
+
+logfile_path: str = "./etl.log"
 
 
 def get_all_espn_games_in_week(espn_scoreboard_endpoint: str) -> list:
@@ -27,12 +30,20 @@ def get_espn_team(espn_team_endpoint: str) -> dict:
             data: dict = requests.get(espn_team_endpoint).json()
             data_fetched = True
         except Exception as e:
-            time.sleep(2)
+            print(f"Error occurred attempting team endpoint request... Reattempting request!\nError: {e}\n")
+            time.sleep(1)
     return data
 
 def scrape_cbs_games_in_week(cbs_scoreboard_week_url: str) -> BeautifulSoup:
     """Method to scrape CBS scoreboard page for give, week"""
-    page_response: requests.Response = requests.get(cbs_scoreboard_week_url)
+    page_fetched: bool = False
+    while page_fetched is not True:
+        try:
+            page_response: requests.Response = requests.get(cbs_scoreboard_week_url)
+            page_fetched = True
+        except Exception as e:
+            print(f"Error occurred attempting cbs game week page request... Reattempting request!\nError: {e}\n")
+            time.sleep(1)
     return BeautifulSoup(page_response.content, "html.parser")
 
 def find_cfb_cbs_game_scorecard(page_soup: str, game_id: str, week: int) -> BeautifulSoup:
@@ -61,7 +72,14 @@ def find_cfb_cbs_game_scorecard(page_soup: str, game_id: str, week: int) -> Beau
 
 def scrape_cbs_team_stats(team_stats_page_url: str) -> BeautifulSoup:
     """Method to scrape CBS team stats page"""
-    page_response: requests.Response = requests.get(team_stats_page_url)
+    page_fetched: bool = False
+    while page_fetched is not True:
+        try:
+            page_response: requests.Response = requests.get(team_stats_page_url)
+            page_fetched = True
+        except Exception as e:
+            print(f"Error occurred attempting CBS Team Stats page request... Reattempting request!\nError: {e}\n")
+            time.sleep(1)
     return BeautifulSoup(page_response.content, "html.parser")
 
 def load_game_data(game_data: object):
@@ -84,16 +102,21 @@ def load_team_data(team_data: object):
 
 def extract_and_load_games(league: str, weeks: int, espn_scoreboard_endpoint: str, cbs_scoreboard_week_url: str) -> dict:
     """Method to perfom ETL process for games data from various sources"""
-    distinct_teams: dict = dict()
+    logfile = open(logfile_path, 'a')
+
     for week in range(weeks):
         week += 1
-        espn_week_response: list = get_all_espn_games_in_week(f"{espn_scoreboard_endpoint}{week}")
+
+        logfile.write(f"\nProcessing {league} week {week} games")
+        print(f"\nProcessing {league} week {week} games")
+
+        espn_week_response: list[dict] = get_all_espn_games_in_week(f"{espn_scoreboard_endpoint}{week}")
         cbs_week_content: BeautifulSoup = scrape_cbs_games_in_week(f"{cbs_scoreboard_week_url}/{week}")
         
         for espn_game_json in espn_week_response:
             game: Game = Game()
             game_id = eg.extract_game_id(espn_game_json)
-            print(f"\n\nProcessing {league} Week {week} Game {game_id}")
+            
             cbs_game_scorecard_soup: BeautifulSoup = find_cfb_cbs_game_scorecard(cbs_week_content, game_id, week)
             
             game.game_id = game_id
@@ -105,86 +128,102 @@ def extract_and_load_games(league: str, weeks: int, espn_scoreboard_endpoint: st
             game.fox_code = ""
             game.vegas_code = ""
             
-            print(f"ESPN Code: {game.espn_code}\nCBS Code: {game.cbs_code}")
+            stadium = eg.extract_stadium(espn_game_json)
+            city = eg.extract_city(espn_game_json)
+            state = eg.extract_state(espn_game_json)
+            lat, lon = el.get_lat_long_tuple(stadium, city, state)
 
-            game.away_team_id = eg.extract_away_team(espn_game_json) #tm[eg.extract_away_team(espn_game_json)] if eg.extract_away_team(espn_game_json) in tm else eg.extract_away_team(espn_game_json)
-            game.home_team_id = eg.extract_home_team(espn_game_json) #tm[eg.extract_home_team(espn_game_json)] if eg.extract_home_team(espn_game_json) in tm else eg.extract_home_team(espn_game_json)
+            game.away_team_id = eg.extract_away_team(espn_game_json)
+            game.home_team_id = eg.extract_home_team(espn_game_json)
             game.date = eg.extract_game_date(espn_game_json)
             game.time = eg.extract_game_time(espn_game_json)
             game.tv_coverage = eg.extract_tv_coverage(espn_game_json)
             game.finished = eg.extract_game_finished(espn_game_json)
-            game.away_q1_score = 0 # TODO: Develop extract_box_score methods during/after week 0
-            game.away_q2_score = 0 # TODO: Develop extract_box_score methods during/after week 0
-            game.away_q3_score = 0 # TODO: Develop extract_box_score methods during/after week 0
-            game.away_q4_score = 0 # TODO: Develop extract_box_score methods during/after week 0
-            game.away_overtime_score = 0 # TODO: Develop extract_box_score methods during/after week 0
-            game.away_total_score = 0 # TODO: Develop extract_box_score methods during/after week 0
-            game.home_q1_score = 0 # TODO: Develop extract_box_score methods during/after week 0
-            game.home_q2_score = 0 # TODO: Develop extract_box_score methods during/after week 0
-            game.home_q3_score = 0 # TODO: Develop extract_box_score methods during/after week 0
-            game.home_q4_score = 0 # TODO: Develop extract_box_score methods during/after week 0
-            game.home_overtime_score = 0 # TODO: Develop extract_box_score methods during/after week 0
-            game.home_total_score = 0 # TODO: Develop extract_box_score methods during/after week 0
+            game.away_q1_score = 0                  # TODO: Develop extract_box_score methods during/after week 0
+            game.away_q2_score = 0                  # TODO: Develop extract_box_score methods during/after week 0
+            game.away_q3_score = 0                  # TODO: Develop extract_box_score methods during/after week 0
+            game.away_q4_score = 0                  # TODO: Develop extract_box_score methods during/after week 0
+            game.away_overtime_score = 0            # TODO: Develop extract_box_score methods during/after week 0
+            game.away_total_score = 0               # TODO: Develop extract_box_score methods during/after week 0
+            game.home_q1_score = 0                  # TODO: Develop extract_box_score methods during/after week 0
+            game.home_q2_score = 0                  # TODO: Develop extract_box_score methods during/after week 0
+            game.home_q3_score = 0                  # TODO: Develop extract_box_score methods during/after week 0
+            game.home_q4_score = 0                  # TODO: Develop extract_box_score methods during/after week 0
+            game.home_overtime_score = 0            # TODO: Develop extract_box_score methods during/after week 0
+            game.home_total_score = 0               # TODO: Develop extract_box_score methods during/after week 0
             game.espn_away_moneyline = eg.extract_away_moneyline(espn_game_json)
             game.espn_home_moneyline = eg.extract_home_moneyline(espn_game_json)
             game.espn_away_spread = eg.extract_away_spread(espn_game_json)
             game.espn_home_spread = eg.extract_home_spread(espn_game_json)
             game.espn_over_under = eg.extract_over_under(espn_game_json)
-            game.espn_away_win_percentage = None # TODO: Develop extract_away_win_percentage method, when available
-            game.espn_home_win_percentage = None # TODO: Develop extract_home_win_percentage method, when available
-            game.cbs_away_moneyline = None # cg.get_away_moneyline()
-            game.cbs_home_moneyline = None # cg.get_home_moneyline()
-            game.cbs_away_spread = None # Develop extract_away_spread method, when available
-            game.cbs_home_spread = None # Develop extract_away_spread method, when available
-            game.cbs_over_under = None # cg.get_over_under()
-            game.cbs_away_win_percentage = None # Develop extract_away_win_percentage method, when available
-            game.cbs_home_win_percentage = None # Develop extract_home_win_percentage method, when available
-            # fox odds metrics ...
-            
-            stadium = eg.extract_stadium(espn_game_json)
-            city = eg.extract_city(espn_game_json)
-            state = eg.extract_state(espn_game_json)
-            lat, lon = el.get_lat_long_tuple(stadium, city, state)
+            game.espn_away_win_percentage = None    # TODO: Develop extract_away_win_percentage method, when available
+            game.espn_home_win_percentage = None    # TODO: Develop extract_home_win_percentage method, when available
+            game.cbs_away_moneyline = None          # cg.get_away_moneyline()
+            game.cbs_home_moneyline = None          # cg.get_home_moneyline()
+            game.cbs_away_spread = None             # TODO: Develop extract_away_spread method, when available
+            game.cbs_home_spread = None             # TODO: Develop extract_away_spread method, when available
+            game.cbs_over_under = None              # cg.get_over_under()
+            game.cbs_away_win_percentage = None     # TODO: Develop extract_away_win_percentage method, when available
+            game.cbs_home_win_percentage = None     # TODO: Develop extract_home_win_percentage method, when available
+            # fox odds metrics ... 
             game.stadium = stadium
             game.city = city
             game.state = state
             game.latitude = lat
             game.longitude = lon
 
-            espn_away_team_code: str = espn_game_json["competitions"][0]["competitors"][0]["team"]["id"] if espn_game_json["competitions"][0]["competitors"][0]["homeAway"] == "away" else espn_game_json["competitions"][0]["competitors"][1]["team"]["id"]
-            cbs_away_team_code: str = tm.espn_to_cbs_team_code_mapping[game.away_team_id] if game.away_team_id in tm.espn_to_cbs_team_code_mapping else game.away_team_id
-            distinct_teams[game.away_team_id] = {
-                "espn_code": espn_away_team_code,
-                #"cbs_code": f"{ct.get_away_team_code(game.cbs_code)}/{game.away_team_id}"
-                "cbs_code": f"{ct.get_away_team_code(game.cbs_code)}/{cbs_away_team_code}"
-            }
-            load_game_data(game)
+
+            if espn_game_json["competitions"][0]["competitors"][0]["homeAway"] == "away":
+                espn_away_team_code: str = espn_game_json["competitions"][0]["competitors"][0]["team"]["id"]
+            else:
+                espn_away_team_code: str = espn_game_json["competitions"][0]["competitors"][1]["team"]["id"]
             
-    return distinct_teams
+            if game.away_team_id in tm.espn_to_cbs_team_code_mapping:
+                cbs_away_team_name: str = tm.espn_to_cbs_team_code_mapping[game.away_team_id]
+            else: 
+                cbs_away_team_name: str = game.away_team_id
+            cbs_away_team_code: str = f"{ct.get_away_team_abbreviation(game.cbs_code)}/{cbs_away_team_name}"
+
+            away_team: dict = {
+                "team_id": game.away_team_id,
+                "league": league,
+                "cbs_code": cbs_away_team_code,
+                "espn_code": espn_away_team_code,
+                "fox_code": "",
+                "vegas_code": ""
+            }
+
+            #espn_away_team_code: str = espn_game_json["competitions"][0]["competitors"][0]["team"]["id"] if espn_game_json["competitions"][0]["competitors"][0]["homeAway"] == "away" else espn_game_json["competitions"][0]["competitors"][1]["team"]["id"]
+            #cbs_away_team_code: str = tm.espn_to_cbs_team_code_mapping[game.away_team_id] if game.away_team_id in tm.espn_to_cbs_team_code_mapping else game.away_team_id
+            #distinct_teams[game.away_team_id] = {
+                #"espn_code": espn_away_team_code,
+                #"cbs_code": f"{ct.get_away_team_code(game.cbs_code)}/{game.away_team_id}"
+                #"cbs_code": f"{ct.get_away_team_code(game.cbs_code)}/{cbs_away_team_code}"
+            #}
+            load_game_data(game)
+            ld.load_team(away_team)
+
 
 
 def extract_and_load_teams(league: str, distinct_teams: dict, espn_team_endpoint: str):
     """Method to perfom ETL process for teams data from various sources"""
     for distinct_team in distinct_teams:
         print(f"\n\nProcessing {league} Team {distinct_team}")
-        espn_team_json: dict = get_espn_team(f"{espn_team_endpoint}/{distinct_teams[distinct_team]["espn_code"]}")
+        espn_team_json: dict = get_espn_team(f"{espn_team_endpoint}/{distinct_team.espn_code}")
         team: Team = Team()
         team_id: str = et.extract_team_id(espn_team_json)
 
         if league == "CFB":
-            team_stats_page_url: str = f"https://www.cbssports.com/college-football/teams/{distinct_teams[distinct_team]["cbs_code"]}/stats/"
+            team_stats_page_url: str = f"https://www.cbssports.com/college-football/teams/{distinct_team.cbs_code}/stats/"
         else: # league == "NFL"
-            team_stats_page_url: str = f"https://www.cbssports.com/nfl/teams/{distinct_teams[distinct_team]["cbs_code"]}/stats/"
-        
+            team_stats_page_url: str = f"https://www.cbssports.com/nfl/teams/{distinct_team.cbs_code}/stats/"
         cbs_team_stats_soup: BeautifulSoup = scrape_cbs_team_stats(team_stats_page_url)
+
         team.team_id = team_id
-        team.espn_code = distinct_teams[distinct_team]["espn_code"] # et.extract_team_code(espn_team_json)
-        team.cbs_code = distinct_teams[distinct_team]["cbs_code"]
+        team.cbs_code = distinct_team.cbs_code
+        team.espn_code = distinct_team.espn_code
         team.fox_code = ""
         team.vegas_code = ""
-
-        print(f"ESPN Code: {team.espn_code}\nCBS Code: {team.cbs_code}")
-
         team.conference_code = et.extract_conference_code(espn_team_json)
         team.conference_name = et.extract_conference_name(espn_team_json)
         team.division_name = et.extract_division_name(espn_team_json)
