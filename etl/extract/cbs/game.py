@@ -24,12 +24,18 @@ def get_cbs_code(scorecard_soup: str) -> str:
 
 def __get_away_odds__(scorecard_soup: str) -> str:
     """Method to extract CBS away team odds metrics"""
-    return scorecard_soup.find("div", class_="in-progress-odds-away").get_text()
+    try:
+        return scorecard_soup.find("div", class_="in-progress-odds-away").get_text()
+    except:
+        return None
 
 
 def __get_home_odds__(scorecard_soup: str) -> str:
     """Method to extract CBS home team odds metrics"""
-    return scorecard_soup.find("div", class_="in-progress-odds-home").get_text()
+    try:
+        return scorecard_soup.find("div", class_="in-progress-odds-home").get_text()
+    except:
+        return None
 
 
 def get_away_moneyline(scorecard_soup: str) -> str:
