@@ -1,6 +1,26 @@
 import mysql.connector, time
 from config import db_config
 
+
+def get_distinct_teams(league: str) -> list:
+    """Method to retrieve all distinct teams from TEAMS table"""
+    sql: str = f"SELECT * FROM TEAMS WHERE LEAGUE = '{league}'"
+    connected: bool = False
+    while not connected:
+        try:
+            conn = mysql.connector.connect(**db_config)
+            connected = True
+        except Exception as e:
+            print(f"Error occurred while connecting to the database for statement: {sql}\n{e}")
+            time.sleep(1)
+    cursor = conn.cursor()
+    cursor.execute(sql)
+    distinct_teams: list = cursor.fetchall()
+    cursor.close()
+    conn.close()
+    return distinct_teams
+
+
 def instantiate_procedure_params(data_dict: dict) -> str:
     """Method to convert dictionary keys into SQL statement VALUES parameters for database load"""
     procedure_params: str = ""
@@ -19,15 +39,14 @@ def instantiate_procedure_params(data_dict: dict) -> str:
 def call_proc(sql: str) -> None:
     """Method to call given database procedure"""
     print(sql)
-    not_connected: bool = False
-    while not_connected is False:
+    connected: bool = False
+    while not connected:
         try:
             conn = mysql.connector.connect(**db_config)
-            not_connected = True
-        except mysql.connector.Error as err:
-            print(f"Error occurred while connecting to the database for statement: {sql}\n{err}")
+            connected = True
+        except Exception as e:
+            print(f"Error occurred while connecting to the database for statement: {sql}\n{e}")
             time.sleep(1)
-    conn = mysql.connector.connect(**db_config)
     cursor = conn.cursor()
     cursor.execute(sql)
     conn.commit()
