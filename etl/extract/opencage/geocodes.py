@@ -1,10 +1,16 @@
-import requests, time
-from config import open_cage_api_key
+import configparser, requests, time
+
+def __read_opencage_api_key__() -> str:
+    """Method to retrieve opencage key from config file"""
+    config: configparser.ConfigParser = configparser.ConfigParser()
+    config.read("config.ini")
+    open_cage_api_key: str = config["opencage"]["api_key"]
+    return open_cage_api_key
 
 
 def __call_geocode_api__(stadium: str, city: str, state: str=None) -> dict:
     """Method to retrieve data from OpenCage forward geocode endpoint"""
-    open_cage_geocode_endpoint: str = f"https://api.opencagedata.com/geocode/v1/json?key={open_cage_api_key}"
+    open_cage_geocode_endpoint: str = f"https://api.opencagedata.com/geocode/v1/json?key={__read_opencage_api_key__()}"
     formatted_stadium: str = stadium.replace(" ", "+").replace("&", "")
     formatted_city: str = city.replace(" ", "+")
     data: dict
