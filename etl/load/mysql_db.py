@@ -1,4 +1,4 @@
-import mysql.connector
+import mysql.connector, time
 from config import db_config
 
 def instantiate_procedure_params(data_dict: dict) -> str:
@@ -19,6 +19,14 @@ def instantiate_procedure_params(data_dict: dict) -> str:
 def call_proc(sql: str) -> None:
     """Method to call given database procedure"""
     print(sql)
+    not_connected: bool = False
+    while not_connected is False:
+        try:
+            conn = mysql.connector.connect(**db_config)
+            not_connected = True
+        except mysql.connector.Error as err:
+            print(f"Error occurred while connecting to the database for statement: {sql}\n{err}")
+            time.sleep(1)
     conn = mysql.connector.connect(**db_config)
     cursor = conn.cursor()
     cursor.execute(sql)
@@ -59,10 +67,10 @@ def load_location(location: dict) -> None:
     sql_statement: str = f"CALL PROC_LOAD_LOCATION({procedure_params});"
     call_proc(sql_statement)
 
-def load_odds(odds: list) -> None:
+def load_odds(odds: list[dict]) -> None:
     """Method to construct and call SQL to load odds into MySQL Database"""
-    for src in odds:
-        procedure_params: str = instantiate_procedure_params(src)
+    for metric in odds:
+        procedure_params: str = instantiate_procedure_params(metric)
         sql_statement: str = f"CALL PROC_LOAD_ODDS({procedure_params});"
         call_proc(sql_statement)
 
