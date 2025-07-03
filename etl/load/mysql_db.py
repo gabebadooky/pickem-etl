@@ -1,5 +1,15 @@
-import mysql.connector, time
-from config import db_config
+import mysql.connector, os, time
+from dotenv import load_dotenv
+
+load_dotenv()
+db_config: dict = {
+    "user": os.getenv("USER"),
+    "password": os.getenv("PASSWORD"),
+    "host": os.getenv("HOST"),
+    "port": int(os.getenv("PORT")),
+    "database": os.getenv("DATABASE"),
+    "auth_plugin": os.getenv("AUTH_PLUGIN")
+}
 
 
 def get_distinct_teams(league: str) -> list:
@@ -13,7 +23,7 @@ def get_distinct_teams(league: str) -> list:
         except Exception as e:
             print(f"Error occurred while connecting to the database for statement: {sql}\n{e}")
             time.sleep(1)
-    cursor = conn.cursor()
+    cursor = conn.cursor(dictionary=True)
     cursor.execute(sql)
     distinct_teams: list = cursor.fetchall()
     cursor.close()

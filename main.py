@@ -15,8 +15,8 @@ nfl_cbs_scoreboard_week_url: str = f"https://www.cbssports.com/nfl/scoreboard/al
 
 def full_etl(league: str, weeks: int, espn_scoreboard_endpoint: str, espn_team_endpoint: str, cbs_scoreboard_week_url: str):
     """Method to perfrom ETL process for both games and teams from all data sources"""
-    etl.extract_and_load_games(league, weeks, espn_scoreboard_endpoint, cbs_scoreboard_week_url)
-    distinct_teams: list = db.get_distinct_teams(league)
+    #etl.extract_and_load_games(league, weeks, espn_scoreboard_endpoint, cbs_scoreboard_week_url)
+    distinct_teams: list[dict] = db.get_distinct_teams(league)
     etl.extract_and_load_teams(league, distinct_teams, espn_team_endpoint)
 
 def incremental_etl(league: str, weeks: int, espn_scoreboard_endpoint: str, cbs_scoreboard_week_url: str):
@@ -25,7 +25,7 @@ def incremental_etl(league: str, weeks: int, espn_scoreboard_endpoint: str, cbs_
 
 
 # CFB Full ETL
-#full_etl("CFB", cfb_weeks, cfb_espn_scoreboard_endpoint, cfb_espn_team_endpoint, cfb_cbs_scoreboard_week_url)
+full_etl("CFB", cfb_weeks, cfb_espn_scoreboard_endpoint, cfb_espn_team_endpoint, cfb_cbs_scoreboard_week_url)
 
 # CFB Incremental ETL
 # incremental_etl("CFB", cfb_weeks, cfb_espn_scoreboard_endpoint, cfb_cbs_scoreboard_week_url)

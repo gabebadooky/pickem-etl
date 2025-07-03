@@ -18,12 +18,14 @@ logfile_path: str = "./etl.log"
 
 def get_all_espn_games_in_week(espn_scoreboard_endpoint: str) -> list:
     """Method to retrieve all games from ESPN games endpoint"""
+    print(f"Retrieving games for current week from ESPN endpoint {espn_scoreboard_endpoint}")
     data: dict = requests.get(espn_scoreboard_endpoint).json()
     events: list = data["events"]
     return events
 
 def get_espn_team(espn_team_endpoint: str) -> dict:
     """Method to retrieve data from a given ESPN team endpoint"""
+    print(f"Retrieving team from ESPN team endpoint {espn_team_endpoint}")
     data_fetched: bool = False
     while data_fetched is not True:
         try:
@@ -36,6 +38,7 @@ def get_espn_team(espn_team_endpoint: str) -> dict:
 
 def scrape_cbs_games_in_week(cbs_scoreboard_week_url: str) -> BeautifulSoup:
     """Method to scrape CBS scoreboard page for give, week"""
+    print(f"Scraping games for current week from CBS games page {cbs_scoreboard_week_url}")
     page_fetched: bool = False
     while page_fetched is not True:
         try:
@@ -48,9 +51,10 @@ def scrape_cbs_games_in_week(cbs_scoreboard_week_url: str) -> BeautifulSoup:
 
 def find_cfb_cbs_game_scorecard(page_soup: str, game_id: str, week: int) -> BeautifulSoup:
     """Method to find scorecard for current CFB game"""
+    print(f"Scraping {game_id} scorecard from CBS game page")
     # TODO: Refactor me plz
     team_links: list = page_soup.find_all("a", class_="team-name-link")
-    scorecards: list = []
+    scorecards: list[str] = []
     for team_link in team_links:
         ending_index: int = team_link["href"].rfind('/')
         beginning_index: int = team_link["href"].rfind('/', 0, ending_index) + 1
@@ -72,6 +76,7 @@ def find_cfb_cbs_game_scorecard(page_soup: str, game_id: str, week: int) -> Beau
 
 def scrape_cbs_team_stats(team_stats_page_url: str) -> BeautifulSoup:
     """Method to scrape CBS team stats page"""
+    print(f"Scraping stats for current team from CBS team stats page")
     page_fetched: bool = False
     while page_fetched is not True:
         try:
@@ -104,25 +109,23 @@ def extract_and_load_games(league: str, weeks: int, espn_scoreboard_endpoint: st
     """Method to perfom ETL process for games data from various sources"""
     logfile = open(logfile_path, 'a')
 
-    for week in range(weeks):
-        week += 1
-
+    for week in range(weeks + 1):
         logfile.write(f"\nProcessing {league} week {week} games")
-        print(f"\nProcessing {league} week {week} games")
-
-        espn_week_response: list[dict] = get_all_espn_games_in_week(f"{espn_scoreboard_endpoint}{week}")
-        cbs_week_content: BeautifulSoup = scrape_cbs_games_in_week(f"{cbs_scoreboard_week_url}/{week}")
+        print(f"\n\n~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~\nProcessing {league} week {week} games\n~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~\n")
+        
+        espn_week_response: list[dict] = get_all_espn_games_in_week(f"{espn_scoreboard_endpoint}{week + 1 if week == 0 else week}")
+        cbs_week_content: BeautifulSoup = scrape_cbs_games_in_week(f"{cbs_scoreboard_week_url}/{week + 1 if week == 0 else week}")
         
         for espn_game_json in espn_week_response:
             game: Game = Game()
-            game_id = eg.extract_game_id(espn_game_json)
-            
-            cbs_game_scorecard_soup: BeautifulSoup = find_cfb_cbs_game_scorecard(cbs_week_content, game_id, week)
-            
-            game.game_id = game_id
+            game.game_id = eg.extract_game_id(espn_game_json)
             game.league = league
-            game.week = week
+            game.week = eg.extract_game_week(espn_game_json)
             game.year = eg.extract_game_year(espn_game_json)
+            print(f"\nProcessing Week {week} Game ID: {game.game_id}")
+
+            cbs_game_scorecard_soup: BeautifulSoup = find_cfb_cbs_game_scorecard(cbs_week_content, game.game_id, week)
+            
             game.espn_code = eg.extract_game_code(espn_game_json)
             game.cbs_code = cg.get_cbs_code(cbs_game_scorecard_soup) # Scrape CBS game scorebaord
             game.fox_code = ""
@@ -131,7 +134,7 @@ def extract_and_load_games(league: str, weeks: int, espn_scoreboard_endpoint: st
             stadium = eg.extract_stadium(espn_game_json)
             city = eg.extract_city(espn_game_json)
             state = eg.extract_state(espn_game_json)
-            lat, lon = el.get_lat_long_tuple(stadium, city, state)
+            lat, lon = 0.0, 0.0                     # el.get_lat_long_tuple(stadium, city, state)
 
             game.away_team_id = eg.extract_away_team(espn_game_json)
             game.home_team_id = eg.extract_home_team(espn_game_json)
@@ -190,38 +193,42 @@ def extract_and_load_games(league: str, weeks: int, espn_scoreboard_endpoint: st
                 "cbs_code": cbs_away_team_code,
                 "espn_code": espn_away_team_code,
                 "fox_code": "",
-                "vegas_code": ""
+                "vegas_code": "",
+                "conference_code": None,
+                "conference_name": None,
+                "division_name": None,
+                "team_name": None,
+                "team_mascot": None,
+                "power_conference": None,
+                "team_logo_url": None,
+                "primary_color": None,
+                "alternate_color": None
             }
-
-            #espn_away_team_code: str = espn_game_json["competitions"][0]["competitors"][0]["team"]["id"] if espn_game_json["competitions"][0]["competitors"][0]["homeAway"] == "away" else espn_game_json["competitions"][0]["competitors"][1]["team"]["id"]
-            #cbs_away_team_code: str = tm.espn_to_cbs_team_code_mapping[game.away_team_id] if game.away_team_id in tm.espn_to_cbs_team_code_mapping else game.away_team_id
-            #distinct_teams[game.away_team_id] = {
-                #"espn_code": espn_away_team_code,
-                #"cbs_code": f"{ct.get_away_team_code(game.cbs_code)}/{game.away_team_id}"
-                #"cbs_code": f"{ct.get_away_team_code(game.cbs_code)}/{cbs_away_team_code}"
-            #}
+            
             load_game_data(game)
             ld.load_team(away_team)
 
 
 
-def extract_and_load_teams(league: str, distinct_teams: dict, espn_team_endpoint: str):
+def extract_and_load_teams(league: str, distinct_teams: list[dict], espn_team_endpoint: str):
     """Method to perfom ETL process for teams data from various sources"""
     for distinct_team in distinct_teams:
+        distinct_team = {key.lower(): value for key, value in distinct_team.items()}
         print(f"\n\nProcessing {league} Team {distinct_team}")
-        espn_team_json: dict = get_espn_team(f"{espn_team_endpoint}/{distinct_team.espn_code}")
+        espn_team_json: dict = get_espn_team(f"{espn_team_endpoint}/{distinct_team['espn_code']}")
         team: Team = Team()
         team_id: str = et.extract_team_id(espn_team_json)
 
         if league == "CFB":
-            team_stats_page_url: str = f"https://www.cbssports.com/college-football/teams/{distinct_team.cbs_code}/stats/"
+            team_stats_page_url: str = f"https://www.cbssports.com/college-football/teams/{distinct_team['cbs_code']}/stats/"
         else: # league == "NFL"
-            team_stats_page_url: str = f"https://www.cbssports.com/nfl/teams/{distinct_team.cbs_code}/stats/"
+            team_stats_page_url: str = f"https://www.cbssports.com/nfl/teams/{distinct_team['cbs_code']}/stats/"
         cbs_team_stats_soup: BeautifulSoup = scrape_cbs_team_stats(team_stats_page_url)
 
         team.team_id = team_id
-        team.cbs_code = distinct_team.cbs_code
-        team.espn_code = distinct_team.espn_code
+        team.league = distinct_team['league']
+        team.cbs_code = distinct_team['cbs_code']
+        team.espn_code = distinct_team['espn_code']
         team.fox_code = ""
         team.vegas_code = ""
         team.conference_code = et.extract_conference_code(espn_team_json)

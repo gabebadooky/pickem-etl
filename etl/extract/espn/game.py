@@ -1,3 +1,7 @@
+from datetime import date, datetime
+
+week_1_begin_date: date = datetime.strptime("2025-08-28", "%Y-%m-%d").date()
+
 def extract_game_id(data: dict) -> str:
     """Method to extract game_id from ESPN game endpoint response"""
     return data["name"].replace("é", "e").replace("&", "").replace(".", "").replace(" ", "-").replace("(", "").replace(")", "").replace("'", "").replace("--", "-").lower()
@@ -8,11 +12,12 @@ def extract_game_code(data: dict) -> int:
 
 def extract_game_week(data: dict) -> int:
     """Method to extract game week from ESPN game endpoint response"""
-    if hasattr(data["week"], "number"):
-        return data["week"]["number"]
+    game_date: date = datetime.strptime(extract_game_date(data), "%Y-%m-%d").date()
+    if game_date < week_1_begin_date:
+        return 0
     else:
-        return -1
-
+        return data["week"]["number"]
+        
 def extract_game_year(data: dict) -> int:
     """Method to extract game year from ESPN game endpoint response"""
     if hasattr(data["season"], "year"):
