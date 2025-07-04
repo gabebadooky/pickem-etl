@@ -16,17 +16,12 @@ def extract_team_code(data: dict) -> str:
 
 def extract_team_name(data: dict) -> str:
     """Method to extract team location/name from ESPN team endpoint response"""
-    try:
-        return data["team"]["location"]
-    except:
-        return None
+    print(f"Team NAME: {data['team']['location']}")
+    return data["team"]["location"]
 
 def extract_team_mascot(data: dict) -> str:
     """Method to extract team mascot from ESPN team endpoint response"""
-    try:
-        return data["team"]["name"]
-    except:
-        return None
+    return data["team"]["name"]
 
 def extract_conference_code(data: dict) -> str:
     """Method to extract team conference code from ESPN team endpoint response"""

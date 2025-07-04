@@ -92,7 +92,7 @@ def format_location(game: Game) -> dict:
 
 def format_team(team: Team) -> dict:
     """Method to transform team object into Team dictionary for database load"""
-    team = dict(
+    team_dict = dict(
         team_id = team.team_id,
         league = team.league,
         cbs_code = team.cbs_code,
@@ -109,7 +109,7 @@ def format_team(team: Team) -> dict:
         primary_color = team.primary_color,
         alternate_color = team.alternate_color
     )
-    return team
+    return team_dict
 
 def format_conference_record(team: Team) -> dict:
     """Method to transform team object into Conference Record dictionary for database load"""

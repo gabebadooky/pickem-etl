@@ -76,7 +76,7 @@ def find_cfb_cbs_game_scorecard(page_soup: str, game_id: str, week: int) -> Beau
 
 def scrape_cbs_team_stats(team_stats_page_url: str) -> BeautifulSoup:
     """Method to scrape CBS team stats page"""
-    print(f"Scraping stats for current team from CBS team stats page")
+    print(f"Scraping stats for current team from CBS team stats page {team_stats_page_url}")
     page_fetched: bool = False
     while page_fetched is not True:
         try:
@@ -214,7 +214,7 @@ def extract_and_load_teams(league: str, distinct_teams: list[dict], espn_team_en
     """Method to perfom ETL process for teams data from various sources"""
     for distinct_team in distinct_teams:
         distinct_team = {key.lower(): value for key, value in distinct_team.items()}
-        print(f"\n\nProcessing {league} Team {distinct_team}")
+        print(f"\n\nProcessing {league} Team {distinct_team['team_id']}")
         espn_team_json: dict = get_espn_team(f"{espn_team_endpoint}/{distinct_team['espn_code']}")
         team: Team = Team()
         team_id: str = et.extract_team_id(espn_team_json)
