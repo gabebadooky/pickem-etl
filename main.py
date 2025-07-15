@@ -28,7 +28,7 @@ def incremental_etl(league: str, weeks: int, espn_scoreboard_endpoint: str, cbs_
 full_etl("CFB", cfb_weeks, cfb_espn_scoreboard_endpoint, cfb_espn_team_endpoint, cfb_cbs_scoreboard_week_url)
 
 # CFB Incremental ETL
-# incremental_etl("CFB", cfb_weeks, cfb_espn_scoreboard_endpoint, cfb_cbs_scoreboard_week_url)
+#incremental_etl("CFB", cfb_weeks, cfb_espn_scoreboard_endpoint, cfb_cbs_scoreboard_week_url)
 
 # NFL Full ETL
 # full_etl("NFL", nfl_weeks, nfl_espn_scoreboard_endpoint, nfl_espn_team_endpoint, nfl_cbs_scoreboard_week_url)
