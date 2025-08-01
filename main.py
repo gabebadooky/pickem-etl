@@ -9,7 +9,8 @@ cfb_espn_team_endpoint: str = f"http://site.api.espn.com/apis/site/v2/sports/foo
 cfb_cbs_scoreboard_week_url: str = f"https://www.cbssports.com/college-football/scoreboard/FBS/{year}/regular"
 
 nfl_weeks: int = 18
-nfl_espn_scoreboard_endpoint: str = f"http://site.api.espn.com/apis/site/v2/sports/football/nfl/scoreboard?seasontype=2&week="
+#nfl_espn_scoreboard_endpoint: str = f"http://site.api.espn.com/apis/site/v2/sports/football/nfl/scoreboard?seasontype=2&week="
+nfl_espn_scoreboard_endpoint: str = f"https://site.api.espn.com/apis/site/v2/sports/football/nfl/scoreboard?seasontype=2&dates={year}&week="
 nfl_espn_team_endpoint: str = f"https://site.api.espn.com/apis/site/v2/sports/football/nfl/teams"
 nfl_cbs_scoreboard_week_url: str = f"https://www.cbssports.com/nfl/scoreboard/all/{year}/regular"
 
@@ -25,13 +26,13 @@ def incremental_etl(league: str, weeks: int, espn_scoreboard_endpoint: str, cbs_
 
 
 # CFB Full ETL
-full_etl("CFB", cfb_weeks, cfb_espn_scoreboard_endpoint, cfb_espn_team_endpoint, cfb_cbs_scoreboard_week_url)
+#full_etl("CFB", cfb_weeks, cfb_espn_scoreboard_endpoint, cfb_espn_team_endpoint, cfb_cbs_scoreboard_week_url)
 
 # CFB Incremental ETL
 #incremental_etl("CFB", cfb_weeks, cfb_espn_scoreboard_endpoint, cfb_cbs_scoreboard_week_url)
 
 # NFL Full ETL
-# full_etl("NFL", nfl_weeks, nfl_espn_scoreboard_endpoint, nfl_espn_team_endpoint, nfl_cbs_scoreboard_week_url)
+full_etl("NFL", nfl_weeks, nfl_espn_scoreboard_endpoint, nfl_espn_team_endpoint, nfl_cbs_scoreboard_week_url)
 
 # NFL Incremental ETL
-# incremental_etl("NFL", nfl_weeks, nfl_espn_scoreboard_endpoint)
+# incremental_etl("NFL", nfl_weeks, nfl_espn_scoreboard_endpoint, nfl_cbs_scoreboard_week_url)
