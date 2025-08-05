@@ -28,8 +28,7 @@ def extract_game_year(data: dict) -> int:
 def extract_game_time(data: dict) -> str:
     """Method to extract game time from ESPN game endpoint response"""
     try:
-        time: str = str(data["competitions"][0]["date"].split("T")[1])
-        print(time)
+        time: str = str(data["competitions"][0]["date"].split("T")[1][:-1])
         return time
     except:
         return None

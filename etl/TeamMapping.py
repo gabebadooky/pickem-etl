@@ -52,3 +52,33 @@ espn_to_cbs_team_code_mapping = {
     "southern-jaguars": "southern-university-jaguars",
     "the-citadel-bulldogs": "citadel-bulldogs"
 }
+
+
+
+fox_to_espn_team_code_mapping = {
+    "st-francis-pa-red-flash": "saint-francis-red-flash",
+    "tennessee-martin-skyhawks": "ut-martin-skyhawks",
+    "appalachian-state-mountaineers": "app-state-mountaineers",
+    "central-connecticut-state-blue-devils": "central-connecticut-blue-devils",
+    "university-at-albany-great-danes": "ualbany-great-danes",
+    "liu-sharks": "long-island-university",
+    "nicholls-state-colonels": "nicholls-colonels",
+    "southeastern-louisiana-lions": "se-louisiana-lions",
+    "grambling-state-tigers": "grambling-tigers",
+    "louisiana-monroe-warhawks": "ul-monroe-warhawks",
+    "north-carolina-state-wolfpack": "nc-state-wolfpack"
+}
+
+espn_to_fox_team_code_mapping = {
+    "saint-francis-red-flash": "st-francis-pa-red-flash",
+    "ut-martin-skyhawks": "tennessee-martin-skyhawks",
+    "app-state-mountaineers": "appalachian-state-mountaineers",
+    "central-connecticut-blue-devils": "central-connecticut-state-blue-devils",
+    "ualbany-great-danes": "university-at-albany-great-danes",
+    "long-island-university": "liu-sharks",
+    "nicholls-colonels": "nicholls-state-colonels",
+    "se-louisiana-lions": "southeastern-louisiana-lions",
+    "grambling-tigers": "grambling-state-tigers",
+    "ul-monroe-warhawks": "louisiana-monroe-warhawks",
+    "nc-state-wolfpack": "north-carolina-state-wolfpack"
+}

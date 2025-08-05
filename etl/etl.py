@@ -1,6 +1,7 @@
 import requests, time
 import etl.extract.espn.game as eg
 import etl.extract.cbs.game as cg
+import etl.extract.fox.game as fg
 import etl.extract.opencage.geocodes as el
 import etl.extract.espn.team as et
 import etl.extract.cbs.team as ct
@@ -23,6 +24,7 @@ def get_all_espn_games_in_week(espn_scoreboard_endpoint: str) -> list:
     events: list = data["events"]
     return events
 
+
 def get_espn_team(espn_team_endpoint: str) -> dict:
     """Method to retrieve data from a given ESPN team endpoint"""
     print(f"Retrieving team from ESPN team endpoint {espn_team_endpoint}")
@@ -36,8 +38,9 @@ def get_espn_team(espn_team_endpoint: str) -> dict:
             time.sleep(1)
     return data
 
+
 def scrape_cbs_games_in_week(cbs_scoreboard_week_url: str) -> BeautifulSoup:
-    """Method to scrape CBS scoreboard page for give, week"""
+    """Method to scrape CBS scoreboard page for given week"""
     print(f"Scraping games for current week from CBS games page {cbs_scoreboard_week_url}")
     page_fetched: bool = False
     while page_fetched is not True:
@@ -49,7 +52,8 @@ def scrape_cbs_games_in_week(cbs_scoreboard_week_url: str) -> BeautifulSoup:
             time.sleep(1)
     return BeautifulSoup(page_response.content, "html.parser")
 
-def find_cfb_cbs_game_scorecard(page_soup: str, game_id: str, week: int) -> BeautifulSoup:
+
+def find_cbs_game_scorecard(page_soup: str, game_id: str, week: int) -> BeautifulSoup:
     """Method to find scorecard for current CFB game"""
     print(f"Scraping {game_id} scorecard from CBS game page")
     # TODO: Refactor me plz
@@ -74,6 +78,7 @@ def find_cfb_cbs_game_scorecard(page_soup: str, game_id: str, week: int) -> Beau
     else:
         return scorecards[0]
 
+
 def scrape_cbs_team_stats(team_stats_page_url: str) -> BeautifulSoup:
     """Method to scrape CBS team stats page"""
     print(f"Scraping stats for current team from CBS team stats page {team_stats_page_url}")
@@ -87,6 +92,65 @@ def scrape_cbs_team_stats(team_stats_page_url: str) -> BeautifulSoup:
             time.sleep(1)
     return BeautifulSoup(page_response.content, "html.parser")
 
+
+def scrape_fox_games_in_week(fox_schedule_week_url: str):
+    """Method to scrape Fox schedule page for given week"""
+    print(f"Scraping games for current week from FOX games page {fox_schedule_week_url}")
+    page_fetched: bool = False
+    while page_fetched is not True:
+        try:
+            page_response: requests.Response = requests.get(fox_schedule_week_url)
+            page_fetched = True
+        except Exception as e:
+            print(f"Error occurred attempting Fox game week page request... Reattempting request!\nError: {e}\n")
+            time.sleep(1)
+    return BeautifulSoup(page_response.content, "html.parser")
+
+
+def extract_fox_game_url(page_soup: str, game_id: str, week: int) -> str:
+    """Method to find score chip for current game"""
+    print(f"Scraping {game_id} score chip from Fox schedule page")
+    game_links: list = [] # .find_all("div", class_="table-segment")
+    game_tables: list = page_soup.find_all("tbody", class_="row-data")
+    
+    for table in game_tables:
+        for row in table.find_all("tr"):
+            game_anchor_href: str = row.find("td").find("div").find("a")["href"]
+            beginning_index: int = game_anchor_href.find("college-football/") + 17
+            ending_index: int = game_anchor_href.find("-vs-")
+            formatted_away_team = game_anchor_href[beginning_index:ending_index]
+            if formatted_away_team in tm.fox_to_espn_team_code_mapping:
+                formatted_away_team = tm.fox_to_espn_team_code_mapping[formatted_away_team]
+            if formatted_away_team in game_id:
+                game_url: str = f"https://www.foxsports.com/{game_anchor_href}"
+                if week <=1:
+                    game_links.append(game_url)
+                else:
+                    return game_url
+    if len(game_links) > 1:
+        return game_links[week]
+    else:
+        return game_links[0]
+    
+
+
+def scrape_fox_game_odds_page(game_url: str):
+    """Method to scrape Fox game odds page"""
+    page_fetched = False
+    while page_fetched is not True:
+        try:
+            page_response: requests.Response = requests.get(game_url)
+            page_fetched = True
+        except Exception as e:
+            print(f"Error occurred attempting Fox game odds page request.. Reattempting request!\nError: {e}\n")
+            time.sleep(1)
+    return BeautifulSoup(page_response.content, "html.parser")
+
+
+
+
+
+
 def load_game_data(game_data: object):
     """Method to consolidate and load game data from various sources"""
     ld.load_box_scores(t.format_away_box_score(game_data))
@@ -94,6 +158,7 @@ def load_game_data(game_data: object):
     ld.load_location(t.format_location(game_data))
     ld.load_odds(t.format_odds(game_data))
     ld.load_game(t.format_game(game_data))
+
 
 def load_team_data(team_data: object):
     """Method to consolidate and load team data from various sources"""
@@ -105,16 +170,17 @@ def load_team_data(team_data: object):
 
 
 
-def extract_and_load_games(league: str, weeks: int, espn_scoreboard_endpoint: str, cbs_scoreboard_week_url: str) -> dict:
+def extract_and_load_games(league: str, weeks: int, espn_scoreboard_endpoint: str, cbs_scoreboard_week_url: str, fox_schedule_week_url: str) -> dict:
     """Method to perfom ETL process for games data from various sources"""
     logfile = open(logfile_path, 'a')
 
     for week in range(weeks + 1):
         logfile.write(f"\nProcessing {league} week {week} games")
         print(f"\n\n~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~\nProcessing {league} week {week} games\n~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~\n")
-        
+         
         espn_week_response: list[dict] = get_all_espn_games_in_week(f"{espn_scoreboard_endpoint}{week + 1 if week == 0 else week}")
         cbs_week_content: BeautifulSoup = scrape_cbs_games_in_week(f"{cbs_scoreboard_week_url}/{week + 1 if week == 0 else week}")
+        fox_week_content: BeautifulSoup = scrape_fox_games_in_week(f"{fox_schedule_week_url}{week + 1 if week == 0 else week}")
         
         for espn_game_json in espn_week_response:
             game: Game = Game()
@@ -124,11 +190,13 @@ def extract_and_load_games(league: str, weeks: int, espn_scoreboard_endpoint: st
             game.year = eg.extract_game_year(espn_game_json)
             print(f"\nProcessing Week {week} Game ID: {game.game_id}")
 
-            cbs_game_scorecard_soup: BeautifulSoup = find_cfb_cbs_game_scorecard(cbs_week_content, game.game_id, week)
+            cbs_game_scorecard_soup: BeautifulSoup = find_cbs_game_scorecard(cbs_week_content, game.game_id, week)
+            fox_game_url = f"{extract_fox_game_url(fox_week_content, game.game_id, week)}?tab=odds"
+            fox_game_odds_soup = scrape_fox_game_odds_page(fox_game_url)
             
             game.espn_code = eg.extract_game_code(espn_game_json)
             game.cbs_code = cg.get_cbs_code(cbs_game_scorecard_soup) # Scrape CBS game scorebaord
-            game.fox_code = ""
+            game.fox_code = fg.get_fox_code(fox_game_url)
             game.vegas_code = ""
             
             stadium = eg.extract_stadium(espn_game_json)
@@ -168,7 +236,11 @@ def extract_and_load_games(league: str, weeks: int, espn_scoreboard_endpoint: st
             game.cbs_over_under = None              # cg.get_over_under()
             game.cbs_away_win_percentage = None     # TODO: Develop extract_away_win_percentage method, when available
             game.cbs_home_win_percentage = None     # TODO: Develop extract_home_win_percentage method, when available
-            # fox odds metrics ... 
+            game.fox_away_moneyline = fg.get_away_moneyline(fox_game_odds_soup)
+            game.fox_home_moneyline = fg.get_home_moneyline(fox_game_odds_soup)
+            game.fox_away_spread = fg.get_away_spread(fox_game_odds_soup)
+            game.fox_home_spread = fg.get_home_spread(fox_game_odds_soup)
+            game.fox_over_under = fg.get_over_under(fox_game_odds_soup)
             game.stadium = stadium
             game.city = city
             game.state = state
