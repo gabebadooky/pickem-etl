@@ -5,7 +5,7 @@ cbs_to_espn_team_code_mapping = {
     "connecticut-huskies": "uconn-huskies",
     "miami-fla-hurricanes": "miami-hurricanes",
     "middle-tenn-blue-raiders": "middle-tennessee-blue-raiders",
-    "saint-francis-u-red-flash": "st-francis-pa-red-flash",
+    "saint-francis-u-red-flash": "saint-francis-red-flash",
     "appalachian-state-mountaineers": "app-state-mountaineers",
     "bethunecookman-wildcats": "bethune-cookman-wildcats",
     "central-connecticut-state-blue-devils": "central-connecticut-blue-devils",
@@ -32,7 +32,7 @@ espn_to_cbs_team_code_mapping = {
     "uconn-huskies": "connecticut-huskies",
     "miami-hurricanes": "miami-fla-hurricanes",
     "middle-tennessee-blue-raiders": "middle-tenn-blue-raiders",
-    "st-francis-pa-red-flash": "saint-francis-u-red-flash",
+    "saint-francis-red-flash": "saint-francis-u-red-flash",
     "app-state-mountaineers": "appalachian-state-mountaineers",
     "bethune-cookman-wildcats": "bethunecookman-wildcats",
     "central-connecticut-blue-devils": "central-connecticut-state-blue-devils",
@@ -66,7 +66,10 @@ fox_to_espn_team_code_mapping = {
     "southeastern-louisiana-lions": "se-louisiana-lions",
     "grambling-state-tigers": "grambling-tigers",
     "louisiana-monroe-warhawks": "ul-monroe-warhawks",
-    "north-carolina-state-wolfpack": "nc-state-wolfpack"
+    "north-carolina-state-wolfpack": "nc-state-wolfpack",
+    "southern-university-jaguars": "southern-jaguars",
+    "umass-minutemen": "massachusetts-minutemen",
+    "miami-fl-hurricanes": "miami-hurricanes"
 }
 
 espn_to_fox_team_code_mapping = {
@@ -80,5 +83,8 @@ espn_to_fox_team_code_mapping = {
     "se-louisiana-lions": "southeastern-louisiana-lions",
     "grambling-tigers": "grambling-state-tigers",
     "ul-monroe-warhawks": "louisiana-monroe-warhawks",
-    "nc-state-wolfpack": "north-carolina-state-wolfpack"
+    "nc-state-wolfpack": "north-carolina-state-wolfpack",
+    "southern-jaguars": "southern-university-jaguars",
+    "massachusetts-minutemen": "umass-minutemen",
+    "miami-hurricanes": "miami-fl-hurricanes"
 }

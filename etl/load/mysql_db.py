@@ -12,9 +12,28 @@ db_config: dict = {
 }
 
 
+def get_users_to_notify() -> list:
+    """Method to retrieve all users with a notification preference defined"""
+    sql: str = "SELECT * FROM USERS WHERE LOWER(NOTIFICATION_PREF) <> 'n';"
+    connected: bool = False
+    while not connected:
+        try:
+            conn = mysql.connector.connect(**db_config)
+            connected = True
+        except Exception as e:
+            print(f"Error occurred while connecting to the database for statement: {sql}\n{e}")
+            time.sleep(1)
+    cursor = conn.cursor(dictionary=True)
+    cursor.execute(sql)
+    users_to_notify: list = cursor.fetchall()
+    cursor.close()
+    conn.close()
+    return users_to_notify
+
+
 def get_distinct_teams(league: str) -> list:
     """Method to retrieve all distinct teams from TEAMS table"""
-    sql: str = f"SELECT * FROM TEAMS WHERE LEAGUE = '{league}'"
+    sql: str = f"SELECT * FROM TEAMS WHERE LEAGUE = '{league}';"
     connected: bool = False
     while not connected:
         try:

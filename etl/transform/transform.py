@@ -76,8 +76,20 @@ def format_odds(game: Game) -> list[dict]:
         cbs_over_under = game.cbs_over_under,
         cbs_away_win_percentage = game.cbs_away_win_percentage,
         cbs_home_win_percentage = game.cbs_home_win_percentage
-    )    
-    return [espn_odds, cbs_odds]
+    )
+    fox_odds: dict = dict(
+        game_id = game.game_id,
+        game_code = game.fox_code,
+        source = "FOX",
+        fox_away_moneyline = game.fox_away_moneyline,
+        fox_home_moneyline = game.fox_home_moneyline,
+        fox_away_spread = game.fox_away_spread,
+        fox_home_spread = game.fox_home_spread,
+        fox_over_under = game.fox_over_under,
+        fox_away_win_percentage = game.fox_away_win_percentage,
+        fox_home_win_percentage = game.fox_home_win_percentage
+    )
+    return [espn_odds, cbs_odds, fox_odds]
 
 def format_location(game: Game) -> dict:
     """Method to transform game object into Location dictionary for database load"""

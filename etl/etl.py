@@ -241,6 +241,8 @@ def extract_and_load_games(league: str, weeks: int, espn_scoreboard_endpoint: st
             game.fox_away_spread = fg.get_away_spread(fox_game_odds_soup)
             game.fox_home_spread = fg.get_home_spread(fox_game_odds_soup)
             game.fox_over_under = fg.get_over_under(fox_game_odds_soup)
+            game.fox_away_win_percentage = None
+            game.fox_home_win_percentage = None
             game.stadium = stadium
             game.city = city
             game.state = state
@@ -257,6 +259,11 @@ def extract_and_load_games(league: str, weeks: int, espn_scoreboard_endpoint: st
                 cbs_away_team_name: str = tm.espn_to_cbs_team_code_mapping[game.away_team_id]
             else: 
                 cbs_away_team_name: str = game.away_team_id
+            
+            if game.away_team_id in tm.espn_to_fox_team_code_mapping:
+                fox_away_team_code: str = tm.espn_to_fox_team_code_mapping[game.away_team_id]
+            else:
+                fox_away_team_code: str = game.away_team_id
             cbs_away_team_code: str = f"{ct.get_away_team_abbreviation(game.cbs_code)}/{cbs_away_team_name}"
 
             away_team: dict = {
@@ -264,7 +271,7 @@ def extract_and_load_games(league: str, weeks: int, espn_scoreboard_endpoint: st
                 "league": league,
                 "cbs_code": cbs_away_team_code,
                 "espn_code": espn_away_team_code,
-                "fox_code": "",
+                "fox_code": fox_away_team_code,
                 "vegas_code": "",
                 "conference_code": None,
                 "conference_name": None,
