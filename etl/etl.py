@@ -3,7 +3,6 @@ from etl.extract.game import Game
 from etl.extract.team import Team
 import etl.extract.extract as extract
 import etl.extract.espn as espn
-import etl.transform.mapping as mapping
 import etl.transform.transform as transform
 import etl.load.mysql_db as mysql
 
@@ -32,10 +31,10 @@ def extract_transform_load_games(week: int, season_properties: dict) -> None:
 
 def extract_transform_load_teams(season_properties: dict) -> None:
     """Method to perfom ETL process for teams data from various sources"""
-    print(f"\n\n~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~\nProcessing {season_properties.league} week {week} games\n~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~\n")
-    
+    print(f"\n\n")
     distinct_teams: list[dict] = mysql.get_distinct_teams(season_properties.league)
     for distinct_team in distinct_teams:
+        print(f"\nProcessing Team: {distinct_team.team_id}")
         distinct_team = {key.lower(): value for key, value in distinct_team.items()}
 
         espn_team: dict = extract.get_espn_team(f"{season_properties.espn_team_endpoint}/{distinct_team.team_id}")
