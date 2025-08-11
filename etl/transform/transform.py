@@ -1,7 +1,7 @@
 from etl.extract.game import Game
 from etl.extract.team import Team
 
-def format_game(game: Game) -> dict:
+def game(game: Game) -> dict:
     """Method to transform game object into Game dictionary for database load"""
     game_dict = dict(
         game_id = game.game_id,
@@ -23,7 +23,7 @@ def format_game(game: Game) -> dict:
     )
     return game_dict
 
-def format_away_box_score(game: Game) -> dict:
+def away_box_score(game: Game) -> dict:
     """Method to transform game object into Away Box Score dictionary for database load"""
     away_box_score = dict(
         game_id = game.game_id,
@@ -37,7 +37,7 @@ def format_away_box_score(game: Game) -> dict:
     )
     return away_box_score
 
-def format_home_box_score(game: Game) -> dict:
+def home_box_score(game: Game) -> dict:
     """Method to transform game object into Home Box Score dictionary for database load"""
     home_box_score = dict(
         game_id = game.game_id,
@@ -51,7 +51,7 @@ def format_home_box_score(game: Game) -> dict:
     )
     return home_box_score
 
-def format_odds(game: Game) -> list[dict]:
+def odds(game: Game) -> list[dict]:
     """Method to transform game object into Odds dictionary for database load"""
     espn_odds: dict = dict(
         game_id = game.game_id,
@@ -91,7 +91,7 @@ def format_odds(game: Game) -> list[dict]:
     )
     return [espn_odds, cbs_odds, fox_odds]
 
-def format_location(game: Game) -> dict:
+def location(game: Game) -> dict:
     """Method to transform game object into Location dictionary for database load"""
     location = dict(
         stadium = game.stadium,
@@ -102,7 +102,7 @@ def format_location(game: Game) -> dict:
     )
     return location
 
-def format_team(team: Team) -> dict:
+def team(team: Team) -> dict:
     """Method to transform team object into Team dictionary for database load"""
     team_dict = dict(
         team_id = team.team_id,
@@ -123,7 +123,7 @@ def format_team(team: Team) -> dict:
     )
     return team_dict
 
-def format_conference_record(team: Team) -> dict:
+def conference_record(team: Team) -> dict:
     """Method to transform team object into Conference Record dictionary for database load"""
     conference_record = dict(
         team_id = team.team_id,
@@ -134,7 +134,7 @@ def format_conference_record(team: Team) -> dict:
     )
     return conference_record
 
-def format_overall_record(team: Team) -> dict:
+def overall_record(team: Team) -> dict:
     """Method to transform team object into Overall Record dictionary for database load"""
     overall_record = dict(
         team_id = team.team_id,
@@ -145,7 +145,7 @@ def format_overall_record(team: Team) -> dict:
     )
     return overall_record
 
-def format_team_stats(team: Team) -> list:
+def team_stats(team: Team) -> list:
     """Method to transform team object into Team Stats list for database load"""
     team_stats: list = []
     stat_types = ["pass_attempts", "opp_pass_attempts",

@@ -33,7 +33,8 @@ def get_users_to_notify() -> list:
 
 def get_distinct_teams(league: str) -> list:
     """Method to retrieve all distinct teams from TEAMS table"""
-    sql: str = f"SELECT * FROM TEAMS WHERE LEAGUE = '{league}';"
+    #sql: str = f"SELECT * FROM TEAMS WHERE LEAGUE = '{league}';"
+    sql: str = f"SELECT DISTINCT AWAY_TEAM_ID FROM GAMES WHERE LEAGUE = '{league}';"
     connected: bool = False
     while not connected:
         try:
