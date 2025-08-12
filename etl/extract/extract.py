@@ -25,6 +25,21 @@ def all_cbs_games_in_week(cbs_scoreboard_week_url: str) -> BeautifulSoup:
     return BeautifulSoup(page_response.content, "html.parser")
 
 
+def all_cbs_odds_in_week(cbs_odds_week_url: str) -> BeautifulSoup:
+    """Method to scrape CBS odds page for given week"""
+    print(f"Scraping odds for current week from CBS odds page {cbs_odds_week_url}")
+    page_fetched: bool = False
+    while page_fetched is not True:
+        try:
+            page_response: requests.Response = requests.get(cbs_odds_week_url)
+            page_fetched = True
+        except Exception as e:
+            print(f"Error occurred attempting cbs odds week page request... Reattempting request!\nError: {e}\n")
+            time.sleep(1)
+    return BeautifulSoup(page_response.content, "html.parser")
+             
+
+
 def all_fox_games_in_week(fox_schedule_week_url: str):
     """Method to scrape Fox schedule page for given week"""
     print(f"Scraping games for current week from FOX games page {fox_schedule_week_url}")
@@ -52,8 +67,8 @@ def cbs_game_scorecard(page_soup: str, game_id: str, week: int) -> BeautifulSoup
         ending_index: int = team_link["href"].rfind('/')
         beginning_index: int = team_link["href"].rfind('/', 0, ending_index) + 1
         reformatted_team: str = team_link["href"][beginning_index:ending_index]
-        if reformatted_team in tm.cbs_to_espn_team_code_mapping:
-            reformatted_team = tm.cbs_to_espn_team_code_mapping[reformatted_team]
+        if reformatted_team in mapping.cbs_to_espn_team_code_mapping:
+            reformatted_team = mapping.cbs_to_espn_team_code_mapping[reformatted_team]
         if reformatted_team in game_id:
             for parent in team_link.parents:
                 parent_element: str = parent
@@ -80,10 +95,10 @@ def fox_game_url(page_soup: str, game_id: str, week: int) -> str:
             beginning_index: int = game_anchor_href.find("college-football/") + 17
             ending_index: int = game_anchor_href.find("-vs-")
             formatted_away_team = game_anchor_href[beginning_index:ending_index]
-            if formatted_away_team in tm.fox_to_espn_team_code_mapping:
-                formatted_away_team = tm.fox_to_espn_team_code_mapping[formatted_away_team]
+            if formatted_away_team in mapping.fox_to_espn_team_code_mapping:
+                formatted_away_team = mapping.fox_to_espn_team_code_mapping[formatted_away_team]
             if formatted_away_team in game_id:
-                game_url: str = f"https://www.foxsports.com/{game_anchor_href}"
+                game_url: str = f"https://www.foxsports.com{game_anchor_href}"
                 if week <=1:
                     game_links.append(game_url)
                 else:

@@ -5,14 +5,14 @@ import etl.extract.fox.game as fox
 
 
 class Game:
-    def __init__(self, espn_game: dict, cbs_game: BeautifulSoup, fox_game: BeautifulSoup):
+    def __init__(self, espn_game: dict, cbs_game: BeautifulSoup, cbs_odds: BeautifulSoup, fox_url: str, fox_game: BeautifulSoup):
         self.game_id: str = espn.extract_game_id(espn_game)
         self.league: str
         self.week: int = espn.extract_game_week(espn_game)
         self.year: int = espn.extract_game_year(espn_game)
         self.espn_code: str = espn.extract_game_code(espn_game)
         self.cbs_code: str = cbs.get_cbs_code(cbs_game)
-        self.fox_code: str = fox.get_fox_code(fox_game)
+        self.fox_code: str = fox.get_fox_code(fox_url)
         self.vegas_code: str = ""
         self.away_team_id: str = espn.extract_away_team(espn_game)
         self.home_team_id: str = espn.extract_home_team(espn_game)
@@ -39,11 +39,11 @@ class Game:
         self.espn_over_under: str = espn.extract_over_under(espn_game)
         self.espn_away_win_percentage: str = None   # TODO:
         self.espn_home_win_percentage: str = None   # TODO:
-        self.cbs_away_moneyline: str = cbs.get_away_moneyline(cbs_game)
-        self.cbs_home_moneyline: str = cbs.get_home_moneyline(cbs_game)
-        self.cbs_away_spread: str = None            # TODO:
-        self.cbs_home_spread: str = None            # TODO:
-        self.cbs_over_under: str = cbs.get_over_under(cbs_game)
+        self.cbs_away_moneyline: str = cbs.away_moneyline(cbs_odds, self.cbs_code)
+        self.cbs_home_moneyline: str = cbs.home_moneyline(cbs_odds, self.cbs_code)
+        self.cbs_away_spread: str = cbs.away_spread(cbs_odds, self.cbs_code)
+        self.cbs_home_spread: str = cbs.home_spread(cbs_odds, self.cbs_code)
+        self.cbs_over_under: str = cbs.over_under(cbs_odds, self.cbs_code)
         self.cbs_away_win_percentage: str = None    # TODO:
         self.cbs_home_win_percentage: str = None    # TODO:
         self.fox_away_moneyline: str = fox.get_away_moneyline(fox_game)
