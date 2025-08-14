@@ -98,21 +98,27 @@ def extract_over_under(data: dict) -> str:
 
 def extract_spread(data: dict) -> int:
     try:
-        return int(data["competitions"][0]["odds"][0], "spread")
+        return data["competitions"][0]["odds"][0]["spread"]
     except:
         return None
 
 def extract_away_spread(data: dict) -> str:
     try:
         spread = extract_spread(data)
-        return f"+{str(spread)}" if spread > 0 else str(spread)
+        if "-" in str(spread):
+            return f"+{spread}"
+        else:
+            return f"-{spread}"
     except:
         return None
 
 def extract_home_spread(data: dict) -> str:
     try:
         spread = extract_spread(data)
-        return f"+{str(spread)}" if spread < 0 else str(spread)
+        if "-" in spread:
+            return spread
+        else:
+            return f"+{spread}"
     except:
         return None
 

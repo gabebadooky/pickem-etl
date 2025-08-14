@@ -51,8 +51,8 @@ class Game:
         self.fox_away_spread: str = fox.get_away_spread(fox_game)
         self.fox_home_spread: str = fox.get_home_spread(fox_game)
         self.fox_over_under: str = fox.get_over_under(fox_game)
-        self.fox_away_win_percentage: str = None    # TODO:
-        self.fox_home_win_percentage: str = None    # TODO: 
+        self.fox_away_win_percentage: str = fox.get_away_win_probability(fox_game)
+        self.fox_home_win_percentage: str = fox.get_home_win_probability(fox_game)
         self.vegas_away_moneyline: str = None
         self.vegas_home_moneyline: str = None
         self.vegas_away_spread: str = None

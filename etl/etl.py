@@ -3,6 +3,7 @@ from etl.extract.game import Game
 from etl.extract.team import Team
 import etl.extract.extract as extract
 import etl.extract.espn as espn
+import etl.transform.mapping as mapping
 import etl.transform.transform as transform
 import etl.load.mysql_db as mysql
 
@@ -25,6 +26,17 @@ def extract_transform_load_games(week: int, season_properties: dict) -> None:
         game: Game = Game(espn_game, cbs_game, cbs_odds, fox_url, fox_game)
         game.league = season_properties['league']
 
+        mysql.load_team({
+            "team_id": game.away_team_id,
+            "league": season_properties["league"],
+            "cbs_code": mapping.espn_to_cbs_team_code_mapping.get(game.away_team_id, game.away_team_id),
+            "espn_code": espn_game["competitions"][0]["competitors"][0]["team"]["id"] if espn_game["competitions"][0]["competitors"][0]["homeAway"] == "away" else espn_game["competitions"][0]["competitors"][1]["team"]["id"],
+            "fox_code": mapping.espn_to_fox_team_code_mapping.get(game.away_team_id, game.away_team_id),
+            
+            "vegas_code": "", "conference_code": None, "conference_name": None, "division_name": None, "team_name": None,
+            "team_mascot": None, "power_conference": None, "team_logo_url": None, "primary_color": None, "alternate_color": None
+        })
+
         mysql.load_box_scores(transform.away_box_score(game))
         mysql.load_box_scores(transform.home_box_score(game))
         mysql.load_location(transform.location(game))
@@ -35,17 +47,21 @@ def extract_transform_load_games(week: int, season_properties: dict) -> None:
 
 def extract_transform_load_teams(season_properties: dict) -> None:
     """Method to perfom ETL process for teams data from various sources"""
-    print(f"\n\n")
-    distinct_teams: list[dict] = mysql.get_distinct_teams(season_properties['league'])
+    print(f"\n")
+    distinct_teams: list[dict] = mysql.get_distinct_teams(season_properties["league"])
     for distinct_team in distinct_teams:
-        print(f"\nProcessing Team: {distinct_team['team_id']}")
+        print(f"\nProcessing Team: {distinct_team['TEAM_ID']}")
         distinct_team = {key.lower(): value for key, value in distinct_team.items()}
 
-        espn_team: dict = extract.get_espn_team(f"{season_properties['espn_team_endpoint']}/{distinct_team['team_id']}")
+        espn_team: dict = extract.get_espn_team(f"{season_properties['espn_team_endpoint']}/{distinct_team['espn_code']}")
         cbs_team: dict = extract.scrape_cbs_team_stats(f"{season_properties['cbs_team_endpoint']}/{extract.map_espn_team_code_to_cbs_team_code(distinct_team['team_id'])}/stats/")
 
         team: Team = Team(espn_team, cbs_team)
-        team.league = season_properties['league']
+        team.league = distinct_team["league"]
+        team.cbs_code = distinct_team["cbs_code"]
+        team.espn_code = distinct_team["espn_code"]
+        team.fox_code = distinct_team["fox_code"]
+        team.vegas_code = ""
 
         mysql.load_record(transform.conference_record(team))
         mysql.load_record(transform.overall_record(team))
