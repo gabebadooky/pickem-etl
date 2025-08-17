@@ -4,7 +4,7 @@
 
 def get_fox_code(fox_game_url: str) -> str | None:
     """Method to extract Fox Game Code ex: iowa-state-cyclones-vs-kansas-state-wildcats-aug-22-2025-game-boxscore-42830"""
-    beginning_index: int = fox_game_url.find("college-football/") + 17
+    beginning_index: int = fox_game_url.find("college-football/") + 17 | fox_game_url.find("nfl/")
     end_index: int = fox_game_url.find("?tab=odds")
     return fox_game_url[beginning_index:end_index]
 
