@@ -28,6 +28,8 @@ nfl_season_properties: dict = {
 
 
 def full_etl():
+    db.toggle_system_maintenance_flag(True)
+
     for week in range(cfb_season_properties['weeks'] + 1):
         etl.extract_transform_load_games(week, cfb_season_properties)
     etl.extract_transform_load_teams(cfb_season_properties)
@@ -36,13 +38,16 @@ def full_etl():
         etl.extract_transform_load_games(week, nfl_season_properties)
     etl.extract_transform_load_teams(nfl_season_properties)
 
+    db.toggle_system_maintenance_flag(False)
+
 
 def incremental_etl():
     etl.extract_transform_load_games(current_week[0], cfb_season_properties)
     etl.extract_transform_load_games(current_week[1], nfl_season_properties)
+    etl.extract_transform_load_teams(cfb_season_properties)
+    etl.extract_transform_load_teams(nfl_season_properties)
 
 
-
-# full_etl()
-etl.extract_transform_load_teams(nfl_season_properties)
+full_etl()
+# incremental_etl()
 

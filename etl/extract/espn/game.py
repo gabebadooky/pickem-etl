@@ -105,10 +105,10 @@ def extract_spread(data: dict) -> int:
 def extract_away_spread(data: dict) -> str:
     try:
         spread = extract_spread(data)
-        if "-" in str(spread):
-            return f"+{spread}"
-        else:
+        if "+" in str(spread):
             return f"-{spread}"
+        else:
+            return spread
     except:
         return None
 

@@ -3,6 +3,7 @@ from etl.extract.game import Game
 from etl.extract.team import Team
 import etl.extract.extract as extract
 import etl.extract.espn as espn
+import etl.extract.cbs.team as cbs
 import etl.transform.mapping as mapping
 import etl.transform.transform as transform
 import etl.load.mysql_db as mysql
@@ -26,10 +27,11 @@ def extract_transform_load_games(week: int, season_properties: dict) -> None:
         game: Game = Game(espn_game, cbs_game, cbs_odds, fox_url, fox_game)
         game.league = season_properties['league']
 
+
         mysql.load_team({
             "team_id": game.away_team_id,
             "league": season_properties["league"],
-            "cbs_code": mapping.espn_to_cbs_team_code_mapping.get(game.away_team_id, game.away_team_id),
+            "cbs_code": f"{cbs.get_away_team_abbreviation(game.cbs_code)}/{mapping.espn_to_cbs_team_code_mapping.get(game.away_team_id, game.away_team_id)}",
             "espn_code": espn_game["competitions"][0]["competitors"][0]["team"]["id"] if espn_game["competitions"][0]["competitors"][0]["homeAway"] == "away" else espn_game["competitions"][0]["competitors"][1]["team"]["id"],
             "fox_code": mapping.espn_to_fox_team_code_mapping.get(game.away_team_id, game.away_team_id),
             

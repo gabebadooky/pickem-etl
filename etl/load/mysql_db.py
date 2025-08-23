@@ -11,6 +11,41 @@ db_config: dict = {
     "auth_plugin": os.getenv("AUTH_PLUGIN")
 }
 
+def instantiate_connection():
+    """Method to instantiate MySQL database connection"""
+    connected: bool = False
+    while not connected:
+        try:
+            conn = mysql.connector.connect(**db_config)
+            connected = True
+        except Exception as e:
+            print(f"Error occurred while connecting to the database for statement: {sql}\n{e}")
+            time.sleep(1)
+    return conn
+
+
+
+def toggle_system_maintenance_flag(under_maintenance: bool) -> None:
+    """Method to toggle IS_TRUE column of UNDER_MAINTENANCE table"""
+    if under_maintenance == True:
+        sql: str = f"UPDATE UNDER_MAINTENANCE SET IS_TRUE = 1;"
+    else:
+        sql: str = f"UPDATE UNDER_MAINTENANCE SET IS_TRUE = 0;"
+    
+    connected: bool = False
+    while not connected:
+        try:
+            conn = mysql.connector.connect(**db_config)
+            connected = True
+        except Exception as e:
+            print(f"Error occurred while connecting to the database for statement: {sql}\n{e}")
+            time.sleep(1)
+    cursor = conn.cursor()
+    cursor.execute(sql)
+    conn.commit()
+    cursor.close()
+    # conn.close()
+
 
 def get_users_to_notify() -> list:
     """Method to retrieve all users with a notification preference defined"""
@@ -27,7 +62,7 @@ def get_users_to_notify() -> list:
     cursor.execute(sql)
     users_to_notify: list = cursor.fetchall()
     cursor.close()
-    conn.close()
+    # conn.close()
     return users_to_notify
 
 
@@ -47,7 +82,7 @@ def get_distinct_teams(league: str) -> list:
     cursor.execute(sql)
     distinct_teams: list = cursor.fetchall()
     cursor.close()
-    conn.close()
+    # conn.close()
     return distinct_teams
 
 
@@ -69,6 +104,7 @@ def instantiate_procedure_params(data_dict: dict) -> str:
 def call_proc(sql: str) -> None:
     """Method to call given database procedure"""
     print(sql)
+    
     connected: bool = False
     while not connected:
         try:
@@ -77,11 +113,12 @@ def call_proc(sql: str) -> None:
         except Exception as e:
             print(f"Error occurred while connecting to the database for statement: {sql}\n{e}")
             time.sleep(1)
+    
     cursor = conn.cursor()
     cursor.execute(sql)
     conn.commit()
     cursor.close()
-    conn.close()
+    # conn.close()
 
 
 def load_record(record: dict) -> None:
