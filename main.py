@@ -2,12 +2,12 @@ from etl import etl
 from etl.load import mysql_db as db
 
 year: str = "2025"
-current_week: tuple = (0, 1)
+current_week: tuple = (1, 1)
 
 cfb_season_properties: dict = {
     "league": "CFB",
     "weeks": 14,
-    "espn_scoreboard_endpoint": f"https://site.api.espn.com/apis/site/v2/sports/football/college-football/scoreboard?seasontype=2&week=",
+    "espn_scoreboard_endpoint": f"https://site.api.espn.com/apis/site/v2/sports/football/college-football/scoreboard?groups=80&seasontype=2&week=",
     "espn_team_endpoint": f"http://site.api.espn.com/apis/site/v2/sports/football/college-football/teams",
     "cbs_scoreboard_week_url": f"https://www.cbssports.com/college-football/scoreboard/FBS/{year}/regular",
     "cbs_odds_week_url": f"https://www.cbssports.com/college-football/odds/FBS/2025/regular/week-",
@@ -32,7 +32,7 @@ def full_etl():
 
     for week in range(cfb_season_properties['weeks'] + 1):
         etl.extract_transform_load_games(week, cfb_season_properties)
-    etl.extract_transform_load_teams(cfb_season_properties)
+    #etl.extract_transform_load_teams(cfb_season_properties)
 
     for week in range(nfl_season_properties['weeks']):
         etl.extract_transform_load_games(week, nfl_season_properties)
@@ -42,12 +42,13 @@ def full_etl():
 
 
 def incremental_etl():
-    etl.extract_transform_load_games(current_week[0], cfb_season_properties)
-    etl.extract_transform_load_games(current_week[1], nfl_season_properties)
+    #etl.extract_transform_load_games(current_week[0], cfb_season_properties)
+    #etl.extract_transform_load_games(current_week[1], nfl_season_properties)
     etl.extract_transform_load_teams(cfb_season_properties)
-    etl.extract_transform_load_teams(nfl_season_properties)
+    #etl.extract_transform_load_teams(nfl_season_properties)
+    db.toggle_system_maintenance_flag(False)
 
 
-full_etl()
-# incremental_etl()
+#full_etl()
+incremental_etl()
 

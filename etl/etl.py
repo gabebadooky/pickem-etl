@@ -28,7 +28,7 @@ def extract_transform_load_games(week: int, season_properties: dict) -> None:
         game.league = season_properties['league']
 
 
-        mysql.load_team({
+        """mysql.load_team({
             "team_id": game.away_team_id,
             "league": season_properties["league"],
             "cbs_code": f"{cbs.get_away_team_abbreviation(game.cbs_code)}/{mapping.espn_to_cbs_team_code_mapping.get(game.away_team_id, game.away_team_id)}",
@@ -37,7 +37,7 @@ def extract_transform_load_games(week: int, season_properties: dict) -> None:
             
             "vegas_code": "", "conference_code": None, "conference_name": None, "division_name": None, "team_name": None,
             "team_mascot": None, "power_conference": None, "team_logo_url": None, "primary_color": None, "alternate_color": None
-        })
+        })"""
 
         mysql.load_box_scores(transform.away_box_score(game))
         mysql.load_box_scores(transform.home_box_score(game))
@@ -54,7 +54,7 @@ def extract_transform_load_teams(season_properties: dict) -> None:
     for distinct_team in distinct_teams:
         print(f"\nProcessing Team: {distinct_team['TEAM_ID']}")
         distinct_team = {key.lower(): value for key, value in distinct_team.items()}
-
+        
         espn_team: dict = extract.get_espn_team(f"{season_properties['espn_team_endpoint']}/{distinct_team['espn_code']}")
         cbs_team: dict = extract.scrape_cbs_team_stats(f"{season_properties['cbs_team_endpoint']}/{extract.map_espn_team_code_to_cbs_team_code(distinct_team['team_id'])}/stats/")
 

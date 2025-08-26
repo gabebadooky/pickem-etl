@@ -119,7 +119,8 @@ def team(team: Team) -> dict:
         power_conference = team.power_conference,
         team_logo_url = team.team_logo_url,
         primary_color = team.primary_color,
-        alternate_color = team.alternate_color
+        alternate_color = team.alternate_color,
+        ranking = team.ranking
     )
     return team_dict
 
@@ -139,9 +140,9 @@ def overall_record(team: Team) -> dict:
     overall_record = dict(
         team_id = team.team_id,
         record_type = "OVERALL",
-        wins = 0,
-        losses = 0,
-        ties = 0
+        wins = team.overall_wins,
+        losses = team.overall_losses,
+        ties = team.overall_ties
     )
     return overall_record
 

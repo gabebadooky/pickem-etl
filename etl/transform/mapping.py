@@ -88,3 +88,9 @@ espn_to_fox_team_code_mapping = {
     "massachusetts-minutemen": "umass-minutemen",
     "miami-hurricanes": "miami-fl-hurricanes"
 }
+
+
+
+vegas_to_espn_team_code_mapping = {
+    
+}

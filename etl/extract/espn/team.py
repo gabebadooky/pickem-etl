@@ -87,179 +87,36 @@ def extract_alternate_color(data: dict) -> str:
         except:
             return "ffffff"
 
+def extract_ranking(data: dict) -> str:
+    """Method to extract team current ranking from ESPN team endpoint response"""
+    try:
+        next_event_competitors: str = data["team"]["nextEvent"][0]["competitions"][0]["competitors"]
+        if next_event_competitors[0]["id"] == data["team"]["id"]:
+            ranking: int = int(next_event_competitors[0]["curatedRank"]["current"])
+        else:
+            ranking: int = int(next_event_competitors[1]["curatedRank"]["current"])
+        
+        return ranking if ranking <= 25 else None
+    
+    except:
+        return None
 
-"""
-data = {
-    "team": {
-        "id": "304", 
-        "uid": "s:20~l:23~t:304", 
-        "slug": "idaho-state-bengals", 
-        "location": "Idaho State", 
-        "name": "Bengals", 
-        "nickname": "Idaho St", 
-        "abbreviation": "IDST", 
-        "displayName": "Idaho State Bengals", 
-        "shortDisplayName": "Idaho St", 
-        "color": "ef8c00", 
-        "alternateColor": "e9a126", 
-        "isActive": True, 
-        "logos": [
-            {
-                "href": "https://a.espncdn.com/i/teamlogos/ncaa/500/304.png", 
-                "width": 500, 
-                "height": 500, 
-                "alt": "", 
-                "rel": ["full", "default"], 
-                "lastUpdated": "2019-08-22T15:06Z"
-            }, 
-            {
-                "href": "https://a.espncdn.com/i/teamlogos/ncaa/500-dark/304.png", 
-                "width": 500, 
-                "height": 500, 
-                "alt": "", 
-                "rel": ["full", "dark"], 
-                "lastUpdated": "2019-08-22T15:06Z"
-            }, 
-            {
-                "href": "https://a.espncdn.com/guid/015f8185-33b5-ab25-83f2-967b77eaddc1/logos/primary_logo_on_white_color.png", 
-                "width": 4096, 
-                "height": 4096, 
-                "alt": "", 
-                "rel": ["full", "primary_logo_on_white_color"], 
-                "lastUpdated": "2024-11-11T01:46Z"
-            }, 
-            {
-                "href": "https://a.espncdn.com/guid/015f8185-33b5-ab25-83f2-967b77eaddc1/logos/primary_logo_on_black_color.png", 
-                "width": 4096, 
-                "height": 4096, 
-                "alt": "", 
-                "rel": ["full", "primary_logo_on_black_color"], 
-                "lastUpdated": "2024-11-11T01:46Z"
-            }, 
-            {
-                "href": "https://a.espncdn.com/guid/015f8185-33b5-ab25-83f2-967b77eaddc1/logos/primary_logo_on_primary_color.png", 
-                "width": 4096, 
-                "height": 4096, 
-                "alt": "", 
-                "rel": ["full", "primary_logo_on_primary_color"], 
-                "lastUpdated": "2024-11-11T01:46Z"
-            }, 
-            {
-                "href": "https://a.espncdn.com/guid/015f8185-33b5-ab25-83f2-967b77eaddc1/logos/primary_logo_on_secondary_color.png", 
-                "width": 4096, 
-                "height": 4096, 
-                "alt": "", 
-                "rel": ["full", "primary_logo_on_secondary_color"], 
-                "lastUpdated": "2024-11-11T01:46Z"
-            }, 
-            {
-                "href": "https://a.espncdn.com/guid/015f8185-33b5-ab25-83f2-967b77eaddc1/logos/secondary_logo_on_white_color.png", 
-                "width": 4096, 
-                "height": 4096, 
-                "alt": "", 
-                "rel": ["full", "secondary_logo_on_white_color"], 
-                "lastUpdated": "2024-11-11T01:46Z"
-            }, 
-            {
-                "href": "https://a.espncdn.com/guid/015f8185-33b5-ab25-83f2-967b77eaddc1/logos/secondary_logo_on_black_color.png", 
-                "width": 4096, 
-                "height": 4096, 
-                "alt": "", 
-                "rel": ["full", "secondary_logo_on_black_color"], 
-                "lastUpdated": "2024-11-11T01:46Z"
-            }, 
-            {
-                "href": "https://a.espncdn.com/guid/015f8185-33b5-ab25-83f2-967b77eaddc1/logos/secondary_logo_on_primary_color.png", 
-                "width": 4096, 
-                "height": 4096, 
-                "alt": "", 
-                "rel": ["full", "secondary_logo_on_primary_color"], 
-                "lastUpdated": "2024-11-11T01:46Z"
-            }, 
-            {
-                "href": "https://a.espncdn.com/guid/015f8185-33b5-ab25-83f2-967b77eaddc1/logos/secondary_logo_on_secondary_color.png", 
-                "width": 4096, 
-                "height": 4096, 
-                "alt": "", 
-                "rel": ["full", "secondary_logo_on_secondary_color"], 
-                "lastUpdated": "2024-11-11T01:46Z"
-            }
-        ], 
-        "record": {}, 
-        "groups": {
-            "id": "20", 
-            "parent": {
-                "id": "81"
-            }, 
-            "isConference": True
-        }, 
-        "links": [
-            {
-                "language": "en-US", 
-                "rel": ["clubhouse", "desktop", "team"], 
-                "href": "https://www.espn.com/college-football/team/_/id/304/idaho-state-bengals", 
-                "text": "Clubhouse", 
-                "shortText": "Clubhouse", 
-                "isExternal": False, 
-                "isPremium": False
-            },
-            {
-                "language": "en-US", 
-                "rel": ["clubhouse", "mobile", "team"], 
-                "href": "https://www.espn.com/college-football/team/_/id/304/idaho-state-bengals", 
-                "text": "Clubhouse", 
-                "shortText": "Clubhouse", 
-                "isExternal": False, 
-                "isPremium": False
-            }, 
-            {
-                "language": "en-US", 
-                "rel": ["roster", "desktop", "team"], 
-                "href": "https://www.espn.com/college-football/team/roster/_/id/304", 
-                "text": "Roster", 
-                "shortText": "Roster", 
-                "isExternal": False, 
-                "isPremium": False
-            }, 
-            {
-                "language": "en-US", 
-                "rel": ["stats", "desktop", "team"], 
-                "href": "https://www.espn.com/college-football/team/stats/_/id/304", 
-                "text": "Statistics", 
-                "shortText": "Statistics", 
-                "isExternal": False, 
-                "isPremium": False
-            }, 
-            {
-                "language": "en-US", 
-                "rel": ["schedule", "desktop", "team"], 
-                "href": "https://www.espn.com/college-football/team/schedule/_/id/304", 
-                "text": "Schedule", 
-                "shortText": "Schedule", 
-                "isExternal": False, 
-                "isPremium": False
-            }, 
-            {
-                "language": "en-US", 
-                "rel": ["tickets", "desktop", "team"], 
-                "href": "https://www.vividseats.com/idaho-state-bengals-football-tickets--sports-ncaa-football/performer/7654?wsUser=717", 
-                "text": "Tickets", 
-                "shortText": "Tickets", 
-                "isExternal": True, 
-                "isPremium": False
-            }, 
-            {
-                "language": "en-US", 
-                "rel": ["awards", "desktop", "team"], 
-                "href": "https://www.espn.com/college-football/awards/_/team/304", 
-                "text": "Awards", 
-                "shortText": "Awards", 
-                "isExternal": False, 
-                "isPremium": False
-            }
-        ], 
-        "nextEvent": [], 
-        "standingSummary": "6th in Big Sky"
+def extract_overall_record(data: dict) -> dict:
+    """Method to extract overall team record from ESPN team enpoint"""
+    record: dict = {
+        "wins": 0,
+        "losses": 0,
+        "ties": 0
     }
-}
-"""
+    try:
+        record_summary_elements: str = data["team"]["record"]["items"][0]["summary"].split("-")
+        print(record_summary_elements)
+        if len(record_summary_elements) == 3:
+            record["wins"] = int(record_summary_elements[0])
+            record["losses"] = int(record_summary_elements[1])
+            record["ties"] = int(record_summary_elements[2])
+        else:
+            record["wins"] = int(record_summary_elements[0])
+            record["losses"] = int(record_summary_elements[1])
+    finally:
+        return record

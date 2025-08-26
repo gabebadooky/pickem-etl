@@ -83,12 +83,13 @@ def extract_tv_coverage(data: dict) -> str:
 
 def extract_game_finished(data: dict) -> int:
     try:
-        if str(data["competitions"][0]["status"]["type"]["completed"]) == "true":
-            return 0
-        else:
+        print(f"game_finished: {data["competitions"][0]["status"]["type"]["completed"]}")
+        if str(data["competitions"][0]["status"]["type"]["completed"]) == "True":
             return 1
+        else:
+            return 0
     except:
-        return 1
+        return 0
 
 def extract_over_under(data: dict) -> str:
     try:
@@ -160,3 +161,60 @@ def extract_city(data: dict) -> str:
     except:
         return None
 
+def extract_away_box_score(data: dict) -> dict:
+    """Method to extract ESPN box score for away team"""
+    box_score: dict = {
+        "q1": 0,
+        "q2": 0,
+        "q3": 0,
+        "q4": 0,
+        "ot": 0,
+        "total": 0
+    }
+    try:
+        competitors: list = data["competitions"][0]["competitors"]
+        if competitors[0]["homeAway"] == "away":
+            box_score["q1"] = int(competitors[0]["linescores"][0]["value"])
+            box_score["q2"] = int(competitors[0]["linescores"][1]["value"])
+            box_score["q3"] = int(competitors[0]["linescores"][2]["value"])
+            box_score["q4"] = int(competitors[0]["linescores"][3]["value"])
+            box_score["total"] = int(competitors[0]["score"])
+            box_score["ot"] = int(competitors[0]["linescores"][4]["value"])
+        else:
+            box_score["q1"] = int(competitors[1]["linescores"][0]["value"])
+            box_score["q2"] = int(competitors[1]["linescores"][1]["value"])
+            box_score["q3"] = int(competitors[1]["linescores"][2]["value"])
+            box_score["q4"] = int(competitors[1]["linescores"][3]["value"])
+            box_score["total"] = int(competitors[1]["score"])
+            box_score["ot"] = int(competitors[1]["linescores"][4]["value"])
+    finally:
+        return box_score
+
+def extract_home_box_score(data: dict) -> dict:
+    """Method to extract ESPN box score for away team"""
+    box_score: dict = {
+        "q1": 0,
+        "q2": 0,
+        "q3": 0,
+        "q4": 0,
+        "ot": 0,
+        "total": 0
+    }
+    try:
+        competitors: list = data["competitions"][0]["competitors"]
+        if competitors[0]["homeAway"] == "home":
+            box_score["q1"] = int(competitors[0]["linescores"][0]["value"])
+            box_score["q2"] = int(competitors[0]["linescores"][1]["value"])
+            box_score["q3"] = int(competitors[0]["linescores"][2]["value"])
+            box_score["q4"] = int(competitors[0]["linescores"][3]["value"])
+            box_score["total"] = int(competitors[0]["score"])
+            box_score["ot"] = int(competitors[0]["linescores"][4]["value"])
+        else:
+            box_score["q1"] = int(competitors[1]["linescores"][0]["value"])
+            box_score["q2"] = int(competitors[1]["linescores"][1]["value"])
+            box_score["q3"] = int(competitors[1]["linescores"][2]["value"])
+            box_score["q4"] = int(competitors[1]["linescores"][3]["value"])
+            box_score["total"] = int(competitors[1]["score"])
+            box_score["ot"] = int(competitors[1]["linescores"][4]["value"])
+    finally:
+        return box_score
