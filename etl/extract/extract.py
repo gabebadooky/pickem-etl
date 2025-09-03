@@ -77,7 +77,9 @@ def cbs_game_scorecard(page_soup: str, game_id: str, week: int) -> BeautifulSoup
                         scorecards.append(parent_element)
                     else:
                         return parent_element
-    if len(scorecards) > 1:
+    if len(scorecards) == 0:
+        return None
+    elif len(scorecards) > 1:
         return scorecards[week]
     else:
         return scorecards[0]

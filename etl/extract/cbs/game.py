@@ -3,7 +3,10 @@
 
 def get_cbs_code(scorecard_soup: str) -> str:
     """Method to extract CBS Game Code ex: `NCAAF_20250823_IOWAST@KSTATE`"""
-    return scorecard_soup["data-abbrev"]
+    try:
+        return scorecard_soup["data-abbrev"]
+    except:
+        return "0"
 
 
 def __scrape_odds_table__(odds_page: str, cbs_code: str) -> str | None:

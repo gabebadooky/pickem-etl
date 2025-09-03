@@ -43,7 +43,8 @@ def extract_transform_load_games(week: int, season_properties: dict) -> None:
         mysql.load_box_scores(transform.home_box_score(game))
         mysql.load_location(transform.location(game))
         mysql.load_odds(transform.odds(game))
-        mysql.load_game(transform.game(game))
+        if game.espn_code != None or game.cbs_code != None or game.fox_code != None:
+            mysql.load_game(transform.game(game))
 
 
 

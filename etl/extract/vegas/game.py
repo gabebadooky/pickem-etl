@@ -18,3 +18,5 @@ def scrape_team_win_percentage(team_tr: str) -> str:
 def scrape_team_spread(consensus_tr: str) -> str:
     """Method that extract Vegas Insider team win percentage"""
     pass
+
+
